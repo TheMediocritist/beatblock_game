@@ -15,9 +15,8 @@ function SongSelectScene:refresh()
     if playdate.file.exists(self.cdir .. v .. "level.json") then
       local clevelj = json.decodeFile(self.cdir .. v .. "level.json")
       table.insert(levels,{islevel = true,songname=clevelj.metadata.songname,artist=clevelj.metadata.artist,filename=self.cdir .. v .. ""})
-    elseif playdate.file.isdir(self.cdir .. v .. "/") then
-
-      table.insert(levels,{islevel = false,name = v,filename=self.cdir .. v .. "/"})
+    elseif playdate.file.isdir(self.cdir .. v) then
+      table.insert(levels,{islevel = false,name = v,filename=self.cdir .. v })
     end
   end
   if self.cdir ~= "levels/" then
@@ -25,7 +24,11 @@ function SongSelectScene:refresh()
     table.insert(levels,{islevel=false,name=gfx.getLocalizedText("back"),filename=helpers.rliid(fname)})
   end
   self.selection = 1
-  self.pljson = json.decodeFile("savedata/playedlevels.json",{})
+  if playdate.file.exists("savedata/playedlevels.json") then
+    self.pljson = json.decodeFile("savedata/playedlevels.json", {})
+  else
+    -- make a new savedata/playedlevels.json?
+  end
   return levels
 
 end
@@ -99,7 +102,7 @@ function SongSelectScene:update()
       if newselection >= 1 and newselection <= self.levelcount then --Only move the cursor if it's within the bounds of the level list
         self.selection = newselection
         te.play(sounds.click,"static")
-        self.ease = flux.to(st,30,{dispy=self.selection*-60}):ease("outExpo")
+        self.ease = flux.to(self,30,{dispy=self.selection*-60}):ease("outExpo")
       end
       if self.levels[self.selection].islevel then
         local curjson = json.decodeFile(self.levels[self.selection].filename .. "level.json")
