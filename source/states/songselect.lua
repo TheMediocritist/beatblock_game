@@ -10,12 +10,13 @@ end
 
 function SongSelectScene:refresh()
   local clist = playdate.file.listFiles(self.cdir)
+  printTable(clist)
   local levels = {}
   for i,v in ipairs(clist) do
     if playdate.file.exists(self.cdir .. v .. "level.json") then
       local clevelj = json.decodeFile(self.cdir .. v .. "level.json")
       table.insert(levels,{islevel = true,songname=clevelj.metadata.songname,artist=clevelj.metadata.artist,filename=self.cdir .. v .. ""})
-    elseif playdate.file.isdir(self.cdir .. v) then
+    elseif playdate.file.isdir(self.cdir .. v .. "/") then
       table.insert(levels,{islevel = false,name = v,filename=self.cdir .. v })
     end
   end
