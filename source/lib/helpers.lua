@@ -321,12 +321,15 @@ function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)
 end
 function helpers.drawgame()
 
-  if not cs.vfx.hom then
-    love.graphics.clear()
-  end
+  -- if not cs.vfx.hom then
+  --   love.graphics.clear()
+  -- end
+  gfx.clear()
 
-  love.graphics.setBlendMode("alpha")
-  love.graphics.setColor(1, 1, 1, 1)
+  --love.graphics.setBlendMode("alpha")
+  
+  --love.graphics.setColor(1, 1, 1, 1)
+  gfx.setColor(playdate.graphics.kColorBlack)
 
   --if cs.vfx.hom then
     --for i=0,cs.vfx.homint do
@@ -335,20 +338,20 @@ function helpers.drawgame()
 
   --end
   --ouch the lag
-  if cs.vfx.bgnoise.enable then
-    love.graphics.setColor(cs.vfx.bgnoise.r,cs.vfx.bgnoise.g,cs.vfx.bgnoise.b,cs.vfx.bgnoise.a)
-    love.graphics.draw(cs.vfx.bgnoise.image,math.random(-2048+gameWidth,0),math.random(-2048+gameHeight,0))
-  end
-  love.graphics.draw(cs.bg)
+  -- if cs.vfx.bgnoise.enable then
+  --   love.graphics.setColor(cs.vfx.bgnoise.r,cs.vfx.bgnoise.g,cs.vfx.bgnoise.b,cs.vfx.bgnoise.a)
+  --   love.graphics.draw(cs.vfx.bgnoise.image,math.random(-2048+gameWidth,0),math.random(-2048+gameHeight,0))
+  -- end
+  -- love.graphics.draw(cs.bg)
 
   gfx.setColor(1)
   em.draw()
   gfx.setColor(0)
   --love.graphics.print(cs.hits.." / " .. (cs.misses+cs.hits),10,10)
-  if cs.combo >= 10 then
-    love.graphics.setFont(DigitalDisco16)
-    love.graphics.print(cs.combo..gfx.getLocalizedText("combo"),10,220)
-  end
+  -- if cs.combo >= 10 then
+  --   love.graphics.setFont(DigitalDisco16)
+  --   love.graphics.print(cs.combo..gfx.getLocalizedText("combo"),10,220)
+  -- end
   gfx.setColor(1)
 end
 

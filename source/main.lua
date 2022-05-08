@@ -222,7 +222,7 @@ entities = {}
 import "states/template"
 import "states/songselect"
 import "states/title"
--- game = import "states/game"
+import "states/game"
 -- rdconvert = import "states/rdconvert"
 -- editor = import "states/editor"
 -- results = import "states/results"

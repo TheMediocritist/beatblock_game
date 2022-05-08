@@ -1,38 +1,43 @@
-local st = {}
-function st.init()
+GameScene = {}
+
+class("GameScene").extends(NobleScene)
+SongSelectScene.backgroundColor = Graphics.kColorWhite
+
+local screenwidth, screenheight = playdate.display.getWidth(), playdate.display.getHeight()
+
+function GameScene:init()
 
 end
 
+function GameScene:enter(prev)
+  self.p = em.init("player", screenwidth/2, screenheight/2)
+  -- self.gm = em.init("gamemanager", screenwidth/2, screenheight/2)
+  -- self.gm.init(st)
 
-function st.enter(prev)
-  st.p = em.init("player",screencenter.x,screencenter.y)
-  st.gm = em.init("gamemanager",screencenter.x,screencenter.y)
-  st.gm.init(st)
+  self.canv = gfx.image.new(screenwidth, screenheight)
 
-  st.canv = love.graphics.newCanvas(gameWidth,gameHeight)
-
-  st.level = json.decodeFile(clevel .. "level.json")
-  st.gm.resetlevel()
-  st.gm.on = true
+  self.level = json.decodeFile(clevel .. "level.json")
+  -- self.gm.resetlevel()
+  -- self.gm.on = true
 end
 
 
-function st.leave()
+function GameScene:leave()
   entities = {}
-  if st.source ~= nil then
-    st.source:stop()
-    st.source = nil
+  if self.source ~= nil then
+    self.source:stop()
+    self.source = nil
   end
-  st.sounddata = nil
+  self.sounddata = nil
 end
 
 
-function st.resume()
+function GameScene:resume()
 
 end
 
 
-function st.update()
+function GameScene:update()
   if not paused then
     if maininput.pressed("back") then
       helpers.swap(states.songselect)
@@ -47,22 +52,26 @@ function st.update()
 end
 
 
-function st.draw()
-  shuv.start()
-
-  love.graphics.rectangle("fill",0,0,gameWidth,gameHeight)
-  love.graphics.setCanvas(st.canv)
-
-    helpers.drawgame()
-  love.graphics.setCanvas(shuv.canvas)
-  love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.draw(st.canv)
+function GameScene:draw()
+  --shuv.start()
+  
+  --love.graphics.rectangle("fill",0,0,gameWidth,gameHeight)
+  gfx.fillRect(0, 0, screenwidth, screenheight)
+  --love.graphics.setCanvas(self.canv)
+  gfx.lockFocus(self.canv)
+  
+  helpers.drawgame()
+  -- love.graphics.setCanvas(shuv.canvas)
+  -- love.graphics.setColor(1, 1, 1, 1)
+  -- love.graphics.draw(self.canv)
+  gfx.unlockFocus()
+  self.canv:draw(0,0)
   if pq ~= "" then
-    print(helpers.round(st.cbeat*8,true)/8 .. pq)
+    print(helpers.round(self.cbeat*8,true)/8 .. pq)
   end
-  shuv.finish()
+  -- shuv.finish()
 
 end
 
 
-return st
+--return st

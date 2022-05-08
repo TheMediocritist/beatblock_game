@@ -64,7 +64,6 @@ function SongSelectScene:update()
   pq = ""
     local newselection = self.selection
     if maininput.pressed("up") then
-      print("up")
       newselection = self.selection - 1
       self.move = true
     end
@@ -75,7 +74,8 @@ function SongSelectScene:update()
     if maininput.pressed("accept") then
       if self.levels[self.selection].islevel then
         clevel = self.levels[self.selection].filename
-        helpers.swap(states.game)
+        --helpers.swap(states.game)
+        Noble.transition(GameScene)
       else
         self.cdir = self.levels[self.selection].filename
         self.levels = self:refresh()
@@ -107,13 +107,14 @@ function SongSelectScene:update()
       end
       if self.levels[self.selection].islevel then
         local curjson = json.decodeFile(self.levels[self.selection].filename .. "level.json")
-        if self.pljson[curjson.metadata.songname.."_"..curjson.metadata.charter] then
-          local cpct = self.pljson[curjson.metadata.songname.."_"..curjson.metadata.charter].pctgrade
-          local sn,ch = helpers.gradecalc(cpct)
-          self.crank = sn .. ch
-        else
-          self.crank = "none"
-        end
+        -- -- REMOVED BELOW FOR NOW AS DOES NOT EXIST
+        -- if self.pljson[curjson.metadata.songname.."_"..curjson.metadata.charter] then
+        --   local cpct = self.pljson[curjson.metadata.songname.."_"..curjson.metadata.charter].pctgrade
+        --   local sn,ch = helpers.gradecalc(cpct)
+        --   self.crank = sn .. ch
+        -- else
+        --   self.crank = "none"
+        -- end
       else
         self.crank = "none"
       end
