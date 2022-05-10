@@ -74,7 +74,7 @@ function helpers.updatemouse()
   end
   mx = helpers.round(((love.mouse.getX()/love.graphics.getWidth())*160),true)
   my = helpers.round(((love.mouse.getY()/love.graphics.getHeight())*90),true)
-  print('fps:'..love.timer.getFPS())
+  --print('fps:'..love.timer.getFPS())
 end
 
 
@@ -237,33 +237,39 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
 
   -- idk why but sometimes the last point doesn't reach the end of the slider
   -- so add it manually if needed
-  if (points[#points] ~= y2) then
-    points[#points+1] = x2
-    points[#points+1] = y2
-  end
+  -- if (points[#points] ~= y2) then
+  --   points[#points+1] = x2
+  --   points[#points+1] = y2
+  -- end
 
   -- need at least 2 points to draw a line ,
   if #points >= 4 then
     -- draw the black outline
-    gfx.setColor(0)
-    love.graphics.setLineWidth(16)
-    gfx.drawLine(points)
-    -- draw a white line, to make the black actually look like an outline
     gfx.setColor(1)
-    love.graphics.setLineWidth(12)
-    gfx.drawLine(points)
+    gfx.setLineWidth(16)
+    for i = 2, #points do
+      gfx.drawLine(points[i-1], points[i-1], points[i], points[i])
+    end
+    -- draw a white line, to make the black actually look like an outline
+    gfx.setColor(0)
+    gfx.setLineWidth(12)
+    for i = 2, #points do
+      gfx.drawLine(points[i-1], points[i-1], points[i], points[i])
+    end
     --the added line for mine holds
     if colortype ~= "hold" then
-      gfx.setColor(0)
-      love.graphics.setLineWidth(10)
-      gfx.drawLine(points)
+      gfx.setColor(1)
+      gfx.setLineWidth(10)
+      for i = 2, #points do
+        gfx.drawLine(points[i-1], points[i-1], points[i], points[i])
+      end
     end
   end
-  gfx.setColor(1)
-
+  gfx.setColor(0)
+  
   -- draw beginning and end of hold
-  love.graphics.draw(sprhold,x1,y1,0,1,1,8,8)
-  love.graphics.draw(sprhold,x2,y2,0,1,1,8,8)
+  sprhold:draw(x1,y1,0,1,1,8,8)
+  sprhold:draw(x2,y2,0,1,1,8,8)
 end
 
 function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)
@@ -273,11 +279,11 @@ function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)
   else
     p = helpers.rotate(rad,angle,ox,oy)
   end
-  love.graphics.setColor(0,0,0,alpha)
-  love.graphics.setLineWidth(2)
-  gfx.pushContext()
-  love.graphics.translate(p[1], p[2])
-  love.graphics.rotate((angle - 90) * math.pi / 180)
+  gfx.setColor(0)
+  gfx.setLineWidth(2)
+  -- gfx.pushContext() -- TEMP REMOVED
+  --love.graphics.translate(p[1], p[2]) -- TEMP REMOVED
+  --love.graphics.rotate((angle - 90) * math.pi / 180) -- TEMP REMOVED
 
   -- draw the lines connecting the player to the paddle
   gfx.drawLine(
@@ -307,7 +313,7 @@ function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)
     ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(-paddle_angle),
     ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(-paddle_angle)
   )
-  gfx.popContext()
+  -- gfx.popContext()  -- TEMP REMOVED
 
   gfx.setColor(1)
   love.graphics.circle("fill",p[1],p[2],4+cs.extend/2)
@@ -330,13 +336,12 @@ function helpers.drawgame()
   
   --love.graphics.setColor(1, 1, 1, 1)
   gfx.setColor(playdate.graphics.kColorBlack)
+  if cs.vfx.hom then
+    for i=0,10 do --cs.vfx.homint do
+      gfx.drawPixel(math.random(0,400),math.random(0,240))
+    end
+  end
 
-  --if cs.vfx.hom then
-    --for i=0,cs.vfx.homint do
-      --love.graphics.points(math.random(0,400),math.random(0,240))
-    --end
-
-  --end
   --ouch the lag
   -- if cs.vfx.bgnoise.enable then
   --   love.graphics.setColor(cs.vfx.bgnoise.r,cs.vfx.bgnoise.g,cs.vfx.bgnoise.b,cs.vfx.bgnoise.a)
@@ -347,6 +352,7 @@ function helpers.drawgame()
   gfx.setColor(1)
   em.draw()
   gfx.setColor(0)
+
   --love.graphics.print(cs.hits.." / " .. (cs.misses+cs.hits),10,10)
   -- if cs.combo >= 10 then
   --   love.graphics.setFont(DigitalDisco16)

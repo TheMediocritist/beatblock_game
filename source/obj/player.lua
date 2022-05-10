@@ -66,6 +66,10 @@ function player()
 	end
 
 	function obj.draw()
+		local paddle_angle = obj.paddle_size / 2 --* math.pi / 180
+		local cranky_diameter = 16
+		local paddle_depth = 10
+
 		gfx.setLineWidth(2)
 		gfx.setColor(0)
 
@@ -75,33 +79,49 @@ function player()
 		-- love.graphics.rotate((obj.angle - 90) * math.pi / 180)
 
 		-- draw the lines connecting the player to the paddle
-		gfx.drawLine(
-			0, 0,
-			(obj.paddle_distance + cs.extend) * math.cos(obj.handle_size * math.pi / 180),
-			(obj.paddle_distance + cs.extend) * math.sin(obj.handle_size * math.pi / 180)
-		)
-		gfx.drawLine(
-			0, 0,
-			(obj.paddle_distance + cs.extend) * math.cos(-obj.handle_size * math.pi / 180),
-			(obj.paddle_distance + cs.extend) * math.sin(-obj.handle_size * math.pi / 180)
-		)
+		-- gfx.drawLine(
+		-- 	0, 0,
+		-- 	(obj.paddle_distance + cs.extend) * math.cos(obj.handle_size * math.pi / 180),
+		-- 	(obj.paddle_distance + cs.extend) * math.sin(obj.handle_size * math.pi / 180)
+		-- )
+		-- gfx.drawLine(
+		-- 	0, 0,
+		-- 	(obj.paddle_distance + cs.extend) * math.cos(-obj.handle_size * math.pi / 180),
+		-- 	(obj.paddle_distance + cs.extend) * math.sin(-obj.handle_size * math.pi / 180)
+		-- )
 
 		-- draw the paddle
-		local paddle_angle = obj.paddle_size / 2 * math.pi / 180
-		gfx.drawArc(0, 0, (obj.paddle_distance + cs.extend), paddle_angle, -paddle_angle)
-		gfx.drawArc(0, 0, (obj.paddle_distance + cs.extend) + obj.paddle_width, paddle_angle, -paddle_angle)
+		-- inner paddle arc
+		gfx.drawArc(obj.x, obj.y, (obj.paddle_distance), obj.angle - paddle_angle, obj.angle + paddle_angle)
+		-- outer paddle arc
+		gfx.drawArc(obj.x, obj.y, (obj.paddle_distance + paddle_depth), obj.angle - paddle_angle, obj.angle + paddle_angle)
+		-- lhs connector
 		gfx.drawLine(
-			(obj.paddle_distance + cs.extend) * math.cos(paddle_angle),
-			(obj.paddle_distance + cs.extend) * math.sin(paddle_angle),
-			((obj.paddle_distance + cs.extend) + obj.paddle_width) * math.cos(paddle_angle),
-			((obj.paddle_distance + cs.extend) + obj.paddle_width) * math.sin(paddle_angle)
+			obj.x, obj.y, 
+			obj.x + obj.paddle_distance * math.cos((obj.angle - paddle_angle/2 - 90) * math.pi / 180), 
+			obj.y + obj.paddle_distance * math.sin((obj.angle - paddle_angle/2 - 90) * math.pi / 180)
 		)
+		-- rhs connector
 		gfx.drawLine(
-			(obj.paddle_distance + cs.extend) * math.cos(-paddle_angle),
-			(obj.paddle_distance + cs.extend) * math.sin(-paddle_angle),
-			((obj.paddle_distance + cs.extend) + obj.paddle_width) * math.cos(-paddle_angle),
-			((obj.paddle_distance + cs.extend) + obj.paddle_width) * math.sin(-paddle_angle)
+			obj.x, obj.y, 
+			obj.x + obj.paddle_distance * math.cos((obj.angle + paddle_angle/2 - 90) * math.pi / 180), 
+			obj.y + obj.paddle_distance * math.sin((obj.angle + paddle_angle/2 - 90) * math.pi / 180)
 		)
+		-- lhs paddle
+		gfx.drawLine(
+			obj.x + obj.paddle_distance * math.cos((obj.angle + paddle_angle - 90) * math.pi / 180), 
+			obj.y + obj.paddle_distance * math.sin((obj.angle + paddle_angle - 90) * math.pi / 180),
+			obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle + paddle_angle - 90) * math.pi / 180), 
+			obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle + paddle_angle - 90) * math.pi / 180)
+		)
+		-- rhs paddle
+		gfx.drawLine(
+			obj.x + obj.paddle_distance * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
+			obj.y + obj.paddle_distance * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180),
+			obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
+			obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180)
+		)
+
 		gfx.popContext()
 
 		gfx.pushContext()
@@ -113,17 +133,21 @@ function player()
 		local finalx = obj.x / ouchpulsescale
 		local finaly = obj.y / ouchpulsescale
 
+		-- draw cranky
 		-- draw the circle
-		gfx.setColor(1)
-		gfx.fillCircleAtPoint(finalx, finaly, 16 + cs.extend / 2 + (math.sin(obj.bobi)) / 2)
 		gfx.setColor(0)
-		gfx.drawCircleAtPoint(finalx, finaly, 16 + cs.extend / 2 + (math.sin(obj.bobi)) / 2)
+		-- gfx.fillCircleAtPoint(finalx, finaly, 16 + cs.extend / 2 + (math.sin(obj.bobi)) / 2)
+		gfx.fillCircleAtPoint(obj.x, obj.y, 16 + cs.extend / 2 + (math.sin(obj.bobi)) / 2)
+		gfx.setColor(1)
+		--gfx.drawCircleAtPoint(finalx, finaly, 16 + cs.extend / 2 + (math.sin(obj.bobi)) / 2)
+		gfx.fillCircleAtPoint(obj.x, obj.y, 14 + cs.extend / 2 + (math.sin(obj.bobi)) / 2)
 
 		-- draw the eyes
 		gfx.setColor(1)
 		-- determine x and y offsets of the eyes
 		local eyex = (obj.lookradius) * math.cos((obj.angle - 90) * math.pi / 180)
 		local eyey = (obj.lookradius) * math.sin((obj.angle - 90) * math.pi / 180)
+		obj.spr[obj.cemotion]:draw(obj.x - cranky_diameter + eyex, obj.y - cranky_diameter + eyey, 0, 1, 1, 32, 32)
 		-- love.graphics.draw(obj.spr[obj.cemotion], finalx + eyex, finaly + eyey, 0, 1, 1, 16, 16)
 		gfx.popContext()
 	end

@@ -6,11 +6,11 @@ SongSelectScene.backgroundColor = Graphics.kColorWhite
 function SongSelectScene:init()
 	SongSelectScene.super.init(self)
   SongSelectScene.fg = sprites.songselect.fg
+  self.levels = {}
 end
 
 function SongSelectScene:refresh()
   local clist = playdate.file.listFiles(self.cdir)
-  printTable(clist)
   local levels = {}
   for i,v in ipairs(clist) do
     if playdate.file.exists(self.cdir .. v .. "level.json") then
@@ -25,11 +25,7 @@ function SongSelectScene:refresh()
     table.insert(levels,{islevel=false,name=gfx.getLocalizedText("back"),filename=helpers.rliid(fname)})
   end
   self.selection = 1
-  if playdate.file.exists("savedata/playedlevels.json") then
-    self.pljson = json.decodeFile("savedata/playedlevels.json", {})
-  else
-    -- make a new savedata/playedlevels.json?
-  end
+  self.pljson = json.decodeFile("savedata/playedlevels.json", {})
   return levels
 
 end
@@ -42,7 +38,7 @@ function SongSelectScene:enter(prev)
   self.extend = 0
   self.levels = self:refresh()
 
-  self.levelcount = #self.levels --Get the # of levels in the songlist
+  --self.levelcount = #self.levels --Get the # of levels in the songlist
   self.crank = "none"
   self.selection = 1
   self.move = false
@@ -80,7 +76,7 @@ function SongSelectScene:update()
         self.cdir = self.levels[self.selection].filename
         self.levels = self:refresh()
 
-        self.levelcount = #self.levels --Get the # of levels in the songlist
+        --self.levelcount = #self.levels --Get the # of levels in the songlist
         if self.ease then
           self.ease:stop()
         end
@@ -100,14 +96,13 @@ function SongSelectScene:update()
       end
     end
     if self.move then
-      if newselection >= 1 and newselection <= self.levelcount then --Only move the cursor if it's within the bounds of the level list
+      if newselection >= 1 and newselection <= #self.levels then --Only move the cursor if it's within the bounds of the level list
         self.selection = newselection
-        te.play(sounds.click,"static")
+        te.play(sounds.click)--,"static")
         self.ease = flux.to(self,30,{dispy=self.selection*-60}):ease("outExpo")
       end
       if self.levels[self.selection].islevel then
         local curjson = json.decodeFile(self.levels[self.selection].filename .. "level.json")
-        -- -- REMOVED BELOW FOR NOW AS DOES NOT EXIST
         -- if self.pljson[curjson.metadata.songname.."_"..curjson.metadata.charter] then
         --   local cpct = self.pljson[curjson.metadata.songname.."_"..curjson.metadata.charter].pctgrade
         --   local sn,ch = helpers.gradecalc(cpct)
@@ -134,14 +129,13 @@ function SongSelectScene:draw()
 
   for i,v in ipairs(self.levels) do
     if v.islevel then
-      gfx.setFont(DigitalDisco24)
-      gfx.drawText(v.songname,10,70+i*60+self.dispy)
       gfx.setFont(DigitalDisco16)
+      gfx.drawText(v.songname,10,70+i*60+self.dispy)
+      gfx.setFont(DigitalDisco12)
       gfx.drawText(v.artist,10,100+i*60+self.dispy)
     else
-      gfx.setFont(DigitalDisco24)
+      gfx.setFont(DigitalDisco16)
       gfx.drawText(v.name,10,76+i*60+self.dispy)
-      --love.graphics.print(v.artist,10,100+i*60+self.dispy)
     end
   end
   em.draw()

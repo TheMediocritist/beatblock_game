@@ -6,23 +6,27 @@ SongSelectScene.backgroundColor = Graphics.kColorWhite
 local screenwidth, screenheight = playdate.display.getWidth(), playdate.display.getHeight()
 
 function GameScene:init()
-
+  GameScene.super.init(self)
+  cs = Noble.currentScene()
 end
 
 function GameScene:enter(prev)
+  GameScene.super.enter(self)
+  cs = Noble.currentScene()
   self.p = em.init("player", screenwidth/2, screenheight/2)
-  -- self.gm = em.init("gamemanager", screenwidth/2, screenheight/2)
-  -- self.gm.init(st)
+  self.gm = em.init("gamemanager", screenwidth/2, screenheight/2)
+  self.gm.init(self)
 
   self.canv = gfx.image.new(screenwidth, screenheight)
 
   self.level = json.decodeFile(clevel .. "level.json")
-  -- self.gm.resetlevel()
-  -- self.gm.on = true
+  self.gm.resetlevel()
+  self.gm.on = true
 end
 
 
 function GameScene:leave()
+  GameScene.super.exit(self)
   entities = {}
   if self.source ~= nil then
     self.source:stop()
@@ -38,9 +42,11 @@ end
 
 
 function GameScene:update()
+  updateDt()
   if not paused then
     if maininput.pressed("back") then
-      helpers.swap(states.songselect)
+      -- helpers.swap(states.songselect)
+      Noble.transition(SongSelectScene)
     end
     --if maininput.pressed("a") then
       --helpers.swap(states.rdconvert)
@@ -74,4 +80,4 @@ function GameScene:draw()
 end
 
 
---return st
+return Game

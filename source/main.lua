@@ -31,6 +31,7 @@ screencenter = {x = gameWidth/2, y = gameHeight/2}
 -- font is https://tepokato.itch.io/axolotl-font
 -- https://www.dafont.com/digital-disco.font
 Axolotl12 = gfx.font.new("assets/fonts/Axolotl-12")
+DigitalDisco12 = gfx.font.new("assets/fonts/DigitalDisco-12")
 DigitalDisco16 = gfx.font.new("assets/fonts/DigitalDisco-16")
 DigitalDisco24 = gfx.font.new("assets/fonts/DigitalDisco-24")
 
@@ -146,8 +147,8 @@ sprites = {
 --load select sounds
 sounds = {
   click = snd.sampleplayer.new("assets/click.wav"),
-  hold = snd.sampleplayer.new("assets/hold1.ogg"),
-  mine = snd.sampleplayer.new("assets/mine.ogg")
+  hold = snd.sampleplayer.new("assets/hold1.wav"),
+  mine = snd.sampleplayer.new("assets/mine.wav")
 }
 
 --setup input
@@ -225,7 +226,8 @@ import "states/title"
 import "states/game"
 -- rdconvert = import "states/rdconvert"
 -- editor = import "states/editor"
--- results = import "states/results"
+import "states/results"
+
 
 
 

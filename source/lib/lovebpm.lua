@@ -13,9 +13,9 @@ local Track = {}
 Track.__index = Track
 
 
-function lovebpm.newTrack()
+function lovebpm:newTrack(filename)
   local self = setmetatable({}, Track)
-  self.source = nil
+  self.source = filename
   self.offset = 0
   self.volume = 1
   self.pitch = 1
@@ -33,7 +33,7 @@ function lovebpm.newTrack()
 end
 
 
-function lovebpm.detectBPM(filename, opts)
+function lovebpm:detectBPM(filename, opts)
   -- Init options table
   opts = opts or {}
   local t = { minbpm = 75, maxbpm = 300 }
@@ -106,7 +106,8 @@ function Track:load(filename)
   -- Init new source
   -- "static" mode is used here instead of "stream" as the time returned by
   -- :tell() seems to go out of sync after the first loop otherwise
-  self.source = love.audio.newSource(filename, "static")
+  --self.source = love.audio.newSource(filename, "static")
+  self.source = snd.fileplayer:load(filename)
   self:setLooping(self.looping)
   self:setVolume(self.volume)
   self:setPitch(self.pitch)
@@ -207,7 +208,7 @@ end
 
 function Track:setTime(n)
   if not self.source then return end
-  self.source:seek(n)
+  self.source:setOffset(n)
   self.time = n
   self.lastSourceTime = n
   self.lastBeat = self:getBeat() - 1
@@ -251,9 +252,9 @@ function Track:update()
 
   -- Get delta time: getTime() is used for time-keeping as the value returned by
   -- :tell() is updated at a potentially lower rate than the framerate
-  local t = love.timer.getTime()
-  local dt = self.lastUpdateTime and (t - self.lastUpdateTime) or 0
-  self.lastUpdateTime = t
+  -- local t = love.timer.getTime()
+  -- local dt = self.lastUpdateTime and (t - self.lastUpdateTime) or 0
+  -- self.lastUpdateTime = t
 
   -- Set new time
   local time
@@ -264,7 +265,7 @@ function Track:update()
   end
 
   -- Get source time and apply offset
-  local sourceTime = self.source:tell("seconds")
+  local sourceTime = self.source:getOffset("seconds")
   sourceTime = sourceTime + self.offset
 
   -- If the value returned by the :tell() function has updated we check to see
