@@ -378,18 +378,18 @@ function beat()
       if not obj.hold and not obj.minehold then
         local scaleval = ((obj.hb-cs.cbeat)*cs.level.properties.speed*obj.smult)/37+1.25
         if obj.inverse then
-          obj.spr2:draw(obj.x,obj.y,0,1,1,8,8)
+          obj.spr2:draw(obj.x,obj.y,0,1,1,16,16)
         elseif obj.mine then
-          obj.spr4:draw(obj.x,obj.y,0,1,1,8,8)
+          obj.spr4:draw(obj.x,obj.y,0,1,1,16,16)
         elseif obj.side then
           --obj.spr5:draw(obj.x,obj.y,math.rad(obj.angle),1,1,12,10)
-          obj.spr5:draw(obj.x,obj.y,0,1,1,12,10)
+          obj.spr5:draw(obj.x,obj.y,0,1,1,24,20)
         elseif obj.ringcw then
           obj.spr7:draw(200,120,math.rad(30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         elseif obj.ringccw then
           obj.spr8:draw(200,120,math.rad(-30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         else
-          obj.spr:draw(obj.x,obj.y,0,1,1,8,8)
+          obj.spr:draw(obj.x,obj.y,0,1,1,16,16)
         end
       elseif obj.hold then
         local completion = math.max(0, (cs.cbeat - obj.hb) / obj.duration)

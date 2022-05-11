@@ -57,6 +57,7 @@ end
 
 
 function SongSelectScene:update()
+  updateDt()
   pq = ""
     local newselection = self.selection
     if maininput.pressed("up") then

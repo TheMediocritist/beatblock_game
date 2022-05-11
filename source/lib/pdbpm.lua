@@ -190,7 +190,7 @@ end
 
 function Track:setTime(n)
   if not self.source then return end
-  self.source:seek(n)
+  self.source:setOffset(n)
   self.time = n
   self.lastSourceTime = n
   self.lastBeat = self:getBeat() - 1

@@ -7,6 +7,7 @@ function Results:init()
 end
 
 function Results:enter(prev)
+  cs.gm.currst.source.source:stop()
   Results.super.enter(self)
   entities = {}
   self.selection = 1
@@ -87,6 +88,7 @@ function Results:mousepressed(x,y,b,t,p)
 end
 
 function Results:update()
+  updateDt()
   pq = ""
   if not paused then
     if maininput.pressed("up") then
@@ -117,47 +119,42 @@ function Results:update()
         end
     end
 
-    flux.update(1)
+    --flux.update(1)
     em.update(dt)
   end
 end
 
-
 function Results:draw()
-  gfx.setFont(Axolotl12)
-  --push:start()
-  --shuv.start()
-  gfx.setColor(1)
 
+  gfx.setFont(DigitalDisco16)
+
+  -- clear the screen
+  gfx.setColor(playdate.graphics.kColorWhite)
   gfx.fillRect(0, 0, gameWidth, gameHeight)
-  gfx.setColor(0)
+  gfx.setColor(playdate.graphics.kColorBlack)
   
   --metadata bar
   local meta_text = (cs.level.metadata.artist .. " - " .. cs.level.metadata.songname)
-  print(meta_text)
-  --gfx.font:drawTextAligned(meta_text, 200, 10, kTextAlignment.center) -- TEMP no idea why drawTextAligned is throwing error. Font issue?
+  --print(meta_text)
+  --gfx.font.drawTextAligned(meta_text, 200, 10, kTextAlignment.center) -- TEMP no idea why drawTextAligned is throwing error. Font issue?
   gfx.fillRect(0, 33, 400, 2)
 
   --results circle
   gfx.setLineWidth(2)
   gfx.drawCircleAtPoint(200, 139, 100)
   --gfx.font:drawTextAligned(gfx.getLocalizedText("grade"), 200, 45, kTextAlignment.center)
-  --love.graphics.setColor(1,1,1)
   sprites.results.grades[self.lgrade]:draw (175+self.goffset,62)
   if self.lgradepm ~= "none" then
     sprites.results.grades[self.lgradepm]:draw(202,61)
   end
-  --love.graphics.setColor(0,0,0)
   --gfx.font:drawTextAligned(gfx.getLocalizedText("misses") .. cs.gm.currst.misses, 200, 135, kTextAlignment.center)
   --gfx.font:drawTextAligned(gfx.getLocalizedText("continue"), 200, 201, kTextAlignment.center)
   --gfx.font:drawTextAligned(gfx.getLocalizedText("retry"), 200, 218, kTextAlignment.center)
   gfx.setLineWidth(1)
   gfx.drawRect(self.cselectionbounds.x,self.cselectionbounds.y,self.cselectionbounds.w,self.cselectionbounds.h)
-  --love.graphics.setColor(1,1,1)
-
+  
   em.draw()
 
-  --shuv.finish()
 end
 
 

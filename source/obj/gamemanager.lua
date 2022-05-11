@@ -1,11 +1,11 @@
 function gamemanager()
-local obj = {
-  layer = 1,
-  uplayer = -9999,
-  x=0,
-  y=0,
-  currst=nil,
-  songfinished = false
+  local obj = {
+    layer = 1,
+    uplayer = -9999,
+    x=0,
+    y=0,
+    currst=nil,
+    songfinished = false
   }
 
   function obj.init(newst)
@@ -224,17 +224,20 @@ local obj = {
           
           print("gammanager.lua [224] obj.currst.sounddata:")
           print(obj.currst.sounddata)
-          obj.currst.source = lovebpm.newTrack(obj.currst.sounddata)
-          --obj.currst.source:load(obj.currst.sounddata)
-          print("gamemanager.lua [229] obj.currst.source: ")
+          obj.currst.sounddata = snd.sampleplayer.new(obj.currst.sounddata, 2)
+          print("gammanager.lua [228] obj.currst.sounddata:")
+          print(obj.currst.sounddata)
+          obj.currst.source = pdbpm:newTrack(obj.currst.sounddata)
+          obj.currst.source:load(obj.currst.sounddata)
+          print("gamemanager.lua [229] obj.currst.source: " .. tostring(obj.currst.source))
           obj.currst.source:setBPM(v.bpm)
           obj.currst.source:setLooping(false)
           obj.currst.source:play()
           obj.currst.source:on("end", function(f) print("song finished!!!!!!!!!!") obj.songfinished = true end)
           obj.currst.source:setBeat(obj.currst.cbeat)
           pq = pq .. "    ".. "now playing ".. v.file
-          print("gammanager.lua [234] obj.currst.source:")
-          print(obj.currst.source)
+          print("gammanager.lua [234] obj.currst.source: " .. tostring(obj.currst.source))
+
         end
   
         if v.type == "width" then
@@ -320,15 +323,12 @@ local obj = {
       end
     end
     
-    print("gamemanager.lua [322]")
-    print("obj.currst.source")
-    print(tostring(obj.currst.source))
-    print("obj.currst.cbeat")
-    print(tostring(obj.currst.cbeat))
+    print("gamemanager.lua [322] obj.currst.source: " .. tostring(obj.currst.source))
+    print("gamemanager.lua [322] obj.currst.cbeat: " .. tostring(obj.currst.cbeat))
     if obj.currst.source == nil or obj.songfinished then
       obj.currst.cbeat = obj.currst.cbeat + (obj.currst.level.bpm/60) * dt
     else
-      obj.currst.source:update()
+      obj.currst.source:update(dt)
       local b,sb = obj.currst.source:getBeat(1)
       obj.currst.cbeat = b+sb
       --print(b+sb)
