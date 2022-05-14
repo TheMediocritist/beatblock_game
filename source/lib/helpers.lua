@@ -214,7 +214,6 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
   -- distances to the beginning and the end of the hold
   local len1 = helpers.distance({xo, yo}, {x1, y1})
   local len2 = helpers.distance({xo, yo}, {x2, y2})
-  local points = {}
 
   -- how many segments to draw
   -- based on the beat's angles by default, but can be overridden in the json
@@ -225,39 +224,52 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
       segments = (math.abs(a2 - a1) + 1)
     end
   end
- for i = 0, segments do
+  local hold_line_l = playdate.geometry.polygon.new(segments)
+  local hold_line_m = playdate.geometry.polygon.new(segments)
+  local hold_line_r = playdate.geometry.polygon.new(segments)
+  for i = 0, segments do
     local t = i / segments
     local angle_t = t * (1 - completion) + completion
     -- coordinates of the next point
     local nextAngle = math.rad(helpers.interpolate(a1, a2, angle_t, interp) - 90)
     local nextDistance = helpers.lerp(len1, len2, t)
-    points[#points+1] = math.cos(nextAngle) * nextDistance + screencenter.x
-    points[#points+1] = math.sin(nextAngle) * nextDistance + screencenter.y
+    local offsetX = math.cos(nextAngle) * 6
+    local offsetY = math.sin(nextAngle) * 6
+    hold_line_l:setPointAt(i+1, 
+      math.cos(nextAngle) * nextDistance + screencenter.x - offsetX, 
+      math.sin(nextAngle) * nextDistance + screencenter.y - offsetY
+    )
+    hold_line_m:setPointAt(i+1, 
+      math.cos(nextAngle) * nextDistance + screencenter.x, 
+      math.sin(nextAngle) * nextDistance + screencenter.y
+    ) 
+    hold_line_r:setPointAt(i+1, 
+      math.cos(nextAngle) * nextDistance + screencenter.x + offsetX, 
+      math.sin(nextAngle) * nextDistance + screencenter.y + offsetY
+    )  
   end
+  
 
   -- idk why but sometimes the last point doesn't reach the end of the slider
   -- so add it manually if needed
-  if (points[#points] ~= y2) then
-    points[#points+1] = x2
-    points[#points+1] = y2
-  end
-
-  -- need at least 2 points to draw a line ,
-  if #points >= 4 then
-    -- draw the black outline
-    gfx.setColor(0)
-    love.graphics.setLineWidth(16)
-    gfx.drawLine(points)
-    -- draw a white line, to make the black actually look like an outline
-    gfx.setColor(1)
-    love.graphics.setLineWidth(12)
-    gfx.drawLine(points)
-    --the added line for mine holds
+  -- if (points[#points] ~= y2) then
+  --   points[#points+1] = x2
+  --   points[#points+1] = y2
+  -- end
+  
+  -- need at least 2 points to draw a line (2 points = 4 entries in points table)
+  if segments >= 1 then
+    
     if colortype ~= "hold" then
-      gfx.setColor(0)
-      love.graphics.setLineWidth(10)
-      gfx.drawLine(points)
+      gfx.setLineWidth(10)
+      gfx.drawPolygon(hold_line_m)
+    else
+      gfx.setLineWidth(2)
+      gfx.setColor(gfx.kColorBlack)
+      gfx.drawPolygon(hold_line_l)
+      gfx.drawPolygon(hold_line_r)
     end
+
   end
   gfx.setColor(0)
   
@@ -319,17 +331,12 @@ function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)
 
   return p[1], p[2]
 end
+
 function helpers.drawgame()
 
-  -- if not cs.vfx.hom then
-  --   love.graphics.clear()
-  -- end
   gfx.clear()
-
-  --love.graphics.setBlendMode("alpha")
-  
-  --love.graphics.setColor(1, 1, 1, 1)
   gfx.setColor(playdate.graphics.kColorBlack)
+  
   if cs.vfx.hom then
     for i=0,10 do --cs.vfx.homint do
       gfx.drawPixel(math.random(0,400),math.random(0,240))
@@ -347,11 +354,11 @@ function helpers.drawgame()
   em.draw()
   gfx.setColor(0)
 
-  --love.graphics.print(cs.hits.." / " .. (cs.misses+cs.hits),10,10)
-  -- if cs.combo >= 10 then
-  --   love.graphics.setFont(DigitalDisco16)
-  --   love.graphics.print(cs.combo..gfx.getLocalizedText("combo"),10,220)
-  -- end
+  gfx.drawText(cs.hits.." / " .. (cs.misses+cs.hits),10,10)
+  if cs.combo >= 2 then
+    gfx.setFont(DigitalDisco16)
+    gfx.drawText(cs.combo .. gfx.getLocalizedText("combo"),10,220)
+  end
   gfx.setColor(1)
 end
 

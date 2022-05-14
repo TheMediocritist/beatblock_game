@@ -21,7 +21,7 @@ function squarevfx()
   
   function obj.draw()
     gfx.setLineWidth(1)
-    --gfx.setColor(0)
+    gfx.setColor(gfx.kColorBlack)
     gfx.drawRect(obj.x -obj.r,obj.y-obj.r,obj.r*2,obj.r*2)
   end
   

@@ -18,7 +18,7 @@ function hitpart()
   
   function obj.draw()
     gfx.setLineWidth(1)
-    --gfx.setColor(0)
+    gfx.setColor(gfx.kColorBlack)
     gfx.drawCircleAtPoint(obj.x,obj.y,obj.rad)
   end
   

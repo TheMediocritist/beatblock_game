@@ -17,7 +17,7 @@ function GameScene:enter(prev)
   self.gm = em.init("gamemanager", screenwidth/2, screenheight/2)
   self.gm.init(self)
 
-  self.canv = gfx.image.new(screenwidth, screenheight)
+  self.canvas = gfx.image.new(screenwidth, screenheight)
 
   self.level = json.decodeFile(clevel .. "level.json")
   self.gm.resetlevel()
@@ -61,21 +61,20 @@ end
 function GameScene:draw()
   --shuv.start()
   
-  --love.graphics.rectangle("fill",0,0,gameWidth,gameHeight)
-  gfx.fillRect(0, 0, screenwidth, screenheight)
-  --love.graphics.setCanvas(self.canv)
-  gfx.lockFocus(self.canv)
+  --gfx.fillRect(0, 0, screenwidth, screenheight)
   
+  -- draw game to canvas
+  gfx.lockFocus(self.canvas)
   helpers.drawgame()
-  -- love.graphics.setCanvas(shuv.canvas)
-  -- love.graphics.setColor(1, 1, 1, 1)
-  -- love.graphics.draw(self.canv)
   gfx.unlockFocus()
-  self.canv:draw(0,0)
+  
+  -- draw canvas to screen
+  self.canvas:draw(0,0)
+  
+  -- ??? Wot this?
   if pq ~= "" then
     print(helpers.round(self.cbeat*8,true)/8 .. pq)
   end
-  -- shuv.finish()
 
 end
 

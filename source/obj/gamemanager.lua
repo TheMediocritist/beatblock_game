@@ -312,7 +312,7 @@ function gamemanager()
           nc.update()
         end
         if v.type == "showresults" then
-          flux.to(obj.currst.p,60,{ouchpulse=300,lookradius=0}):ease("inExpo"):oncomplete(function(f) Noble.transition(Results)end )
+          flux.to(obj.currst.p,60,{ouchpulse=300,lookradius=0}):ease("inExpo"):oncomplete(function(f) Noble.transition(ResultsScene)end )
   
         end
         if v.type == "lua" then

@@ -1,14 +1,14 @@
-Results = {}
+ResultsScene = {}
 
-class("Results").extends(NobleScene)
+class("ResultsScene").extends(NobleScene)
 
-function Results:init()
-  Results.super.init(self)
+function ResultsScene:init()
+  ResultsScene.super.init(self)
 end
 
-function Results:enter(prev)
+function ResultsScene:enter(prev)
   cs.gm.currst.source.source:stop()
-  Results.super.enter(self)
+  ResultsScene.super.enter(self)
   entities = {}
   self.selection = 1
   self.selectionbounds = {
@@ -42,21 +42,21 @@ function Results:enter(prev)
 end
 
 
-function Results:exit()
-  Results.super.exit(self)
+function ResultsScene:exit()
+  ResultsScene.super.exit(self)
 
 end
 
 
-function Results:resume()
+function ResultsScene:resume()
 
 end
 
-function Results:mousepressed(x,y,b,t,p)
+function ResultsScene:mousepressed(x,y,b,t,p)
 
 end
 
-function Results:mousepressed(x,y,b,t,p)
+function ResultsScene:mousepressed(x,y,b,t,p)
   if ismobile then
     if (love.mouse.getY()/shuv.scale) < 240/3 then -- up
       self.selection = 1
@@ -87,7 +87,7 @@ function Results:mousepressed(x,y,b,t,p)
   end
 end
 
-function Results:update()
+function ResultsScene:update()
   updateDt()
   pq = ""
   if not paused then
@@ -124,7 +124,7 @@ function Results:update()
   end
 end
 
-function Results:draw()
+function ResultsScene:draw()
 
   gfx.setFont(DigitalDisco16)
 
@@ -148,7 +148,7 @@ function Results:draw()
     sprites.results.grades[self.lgradepm]:draw(202,61)
   end
   gfx.drawTextAligned(gfx.getLocalizedText("hits: ") .. cs.gm.currst.misses, 200, 135, kTextAlignment.center)
-  gfx.drawTextAligned(gfx.getLocalizedText("misses: ") .. cs.gm.currst.misses, 200, 158, kTextAlignment.center)
+  gfx.drawTextAligned(gfx.getLocalizedText("misses: ") .. cs.gm.currst.hits, 200, 158, kTextAlignment.center)
   
   gfx.setFont(DigitalDisco12)
   gfx.drawTextAligned(gfx.getLocalizedText("continue"), 200, 201, kTextAlignment.center)
@@ -161,4 +161,4 @@ function Results:draw()
 end
 
 
-return Results
+return ResultsScene
