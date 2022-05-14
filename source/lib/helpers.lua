@@ -225,7 +225,7 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
       segments = (math.abs(a2 - a1) + 1)
     end
   end
-  for i = 0, segments do
+ for i = 0, segments do
     local t = i / segments
     local angle_t = t * (1 - completion) + completion
     -- coordinates of the next point
@@ -237,32 +237,26 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
 
   -- idk why but sometimes the last point doesn't reach the end of the slider
   -- so add it manually if needed
-  -- if (points[#points] ~= y2) then
-  --   points[#points+1] = x2
-  --   points[#points+1] = y2
-  -- end
+  if (points[#points] ~= y2) then
+    points[#points+1] = x2
+    points[#points+1] = y2
+  end
 
   -- need at least 2 points to draw a line ,
   if #points >= 4 then
     -- draw the black outline
-    gfx.setColor(1)
-    gfx.setLineWidth(16)
-    for i = 2, #points do
-      gfx.drawLine(points[i-1], points[i-1], points[i], points[i])
-    end
-    -- draw a white line, to make the black actually look like an outline
     gfx.setColor(0)
-    gfx.setLineWidth(12)
-    for i = 2, #points do
-      gfx.drawLine(points[i-1], points[i-1], points[i], points[i])
-    end
+    love.graphics.setLineWidth(16)
+    gfx.drawLine(points)
+    -- draw a white line, to make the black actually look like an outline
+    gfx.setColor(1)
+    love.graphics.setLineWidth(12)
+    gfx.drawLine(points)
     --the added line for mine holds
     if colortype ~= "hold" then
-      gfx.setColor(1)
-      gfx.setLineWidth(10)
-      for i = 2, #points do
-        gfx.drawLine(points[i-1], points[i-1], points[i], points[i])
-      end
+      gfx.setColor(0)
+      love.graphics.setLineWidth(10)
+      gfx.drawLine(points)
     end
   end
   gfx.setColor(0)
