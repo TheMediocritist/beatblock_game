@@ -136,7 +136,7 @@ function Results:draw()
   --metadata bar
   local meta_text = (cs.level.metadata.artist .. " - " .. cs.level.metadata.songname)
   --print(meta_text)
-  --gfx.font.drawTextAligned(meta_text, 200, 10, kTextAlignment.center) -- TEMP no idea why drawTextAligned is throwing error. Font issue?
+  gfx.drawTextAligned(meta_text, 200, 10, kTextAlignment.center) -- TEMP no idea why drawTextAligned is throwing error. Font issue?
   gfx.fillRect(0, 33, 400, 2)
 
   --results circle
@@ -147,9 +147,12 @@ function Results:draw()
   if self.lgradepm ~= "none" then
     sprites.results.grades[self.lgradepm]:draw(202,61)
   end
-  --gfx.font:drawTextAligned(gfx.getLocalizedText("misses") .. cs.gm.currst.misses, 200, 135, kTextAlignment.center)
-  --gfx.font:drawTextAligned(gfx.getLocalizedText("continue"), 200, 201, kTextAlignment.center)
-  --gfx.font:drawTextAligned(gfx.getLocalizedText("retry"), 200, 218, kTextAlignment.center)
+  gfx.drawTextAligned(gfx.getLocalizedText("hits: ") .. cs.gm.currst.misses, 200, 135, kTextAlignment.center)
+  gfx.drawTextAligned(gfx.getLocalizedText("misses: ") .. cs.gm.currst.misses, 200, 158, kTextAlignment.center)
+  
+  gfx.setFont(DigitalDisco12)
+  gfx.drawTextAligned(gfx.getLocalizedText("continue"), 200, 201, kTextAlignment.center)
+  gfx.drawTextAligned(gfx.getLocalizedText("retry"), 200, 218, kTextAlignment.center)
   gfx.setLineWidth(1)
   gfx.drawRect(self.cselectionbounds.x,self.cselectionbounds.y,self.cselectionbounds.w,self.cselectionbounds.h)
   
