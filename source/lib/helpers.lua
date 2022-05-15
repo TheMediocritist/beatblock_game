@@ -204,7 +204,7 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
   if interp == "Linear" then
     segments = 1
   elseif segments == nil then
-    segments = (math.abs(a2 - a1)/2) + 1
+    segments = (math.abs(a2 - a1)/2)
   end
   
   -- if segments == nil then
@@ -227,9 +227,11 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
   --   segments += 1
   -- end
   
-  --local hold_line_l = playdate.geometry.polygon.new(segments)
-  local hold_line_m = playdate.geometry.polygon.new(segments)
-  --local hold_line_r = playdate.geometry.polygon.new(segments)
+  -- make an open polygon (line) to hold all the points connecting segments
+  -- tried to make left & right separate because it draws more neatly but can't sort the maths, so...
+  --local hold_line_l = playdate.geometry.polygon.new(segments + 1)
+  local hold_line_m = playdate.geometry.polygon.new(segments + 1)
+  --local hold_line_r = playdate.geometry.polygon.new(segments + 1)
   local lastX, lastY = 0, 0
   for i = 0, segments do
     local t = i / segments
