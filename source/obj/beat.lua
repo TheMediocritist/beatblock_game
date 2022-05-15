@@ -105,7 +105,7 @@ function beat()
             cs.combo = 0
             cs.p.emotimer = 100
             cs.p.cemotion = "miss"
-  
+            
             cs.p.hurtpulse()
           end
         elseif obj.hold then
@@ -156,13 +156,13 @@ function beat()
             cs.combo = 0
             cs.p.emotimer = 100
             cs.p.cemotion = "miss"
-  
+            
             cs.p.hurtpulse()
           end
-  
+          
         --mine hold
         elseif obj.minehold then
-  
+          
           local hitminehold = nil
           --avoiding mine hold, duration is not 0
           if helpers.angdistance(obj.angle,cs.p.angle) >= cs.p.paddle_size / 2 and obj.duration ~= 0 then 
@@ -173,7 +173,6 @@ function beat()
             --em.init("hitpart",obj.x,obj.y)
             --print(helpers.angdistance(obj.angle,cs.p.angle).. " is less than " .. cs.p.paddle_size / 2)
             obj.angle = helpers.interpolate(obj.endangle,obj.angle2,((obj.hb - cs.cbeat)*-1)/obj.duration, obj.holdease)
-            
             
             p1 = helpers.rotate(cs.extend+cs.length,obj.angle,obj.ox,obj.oy)
             p2 = helpers.rotate((obj.hb - cs.cbeat+obj.duration)*cs.level.properties.speed*obj.smult*obj.smult2+cs.extend+cs.length,obj.angle2,obj.ox,obj.oy)
@@ -197,8 +196,6 @@ function beat()
             else
               hitminehold = true
             end
-  
-  
           end
           
           if hitminehold == true then
@@ -233,7 +230,7 @@ function beat()
         end
   
       elseif obj.mine then
-  
+        
         --mine
         if helpers.angdistance(obj.angle,cs.p.angle) <= cs.p.paddle_size / 2 then 
           -- mine is hit
@@ -468,26 +465,31 @@ function beat()
     
     -- need at least 2 points to draw a line (2 points = 4 entries in points table)
     if segments >= 1 then
-      
-      if colortype ~= "hold" then
-        gfx.setLineWidth(10)
-        gfx.drawPolygon(hold_line_m)
-      else
-        playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
+      playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
+      if colortype == "hold" then
         playdate.graphics.setLineWidth(12)
         gfx.setColor(gfx.kColorBlack)
         gfx.drawPolygon(hold_line_m)
         playdate.graphics.setLineWidth(8)
         gfx.setColor(gfx.kColorWhite)
         gfx.drawPolygon(hold_line_m)
-        
-        -- gfx.setLineWidth(2)
-        -- gfx.setColor(gfx.kColorBlack)
-        -- gfx.drawPolygon(hold_line_l)
-        -- gfx.drawPolygon(hold_line_r)
+      elseif colortype == "minehold" then 
+        playdate.graphics.setLineWidth(12)
+        gfx.setColor(gfx.kColorBlack)
+        gfx.drawPolygon(hold_line_m)
+        playdate.graphics.setLineWidth(8)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.drawPolygon(hold_line_m)
+        playdate.graphics.setLineWidth(4)
+        gfx.setColor(gfx.kColorBlack)
+        gfx.drawPolygon(hold_line_m)
+      else
+        gfx.setLineWidth(4)
+        gfx.drawPolygon(hold_line_m)
       end
-  
+        
     end
+    
     gfx.setColor(0)
     
     -- draw beginning and end of hold

@@ -27,7 +27,7 @@ function gamemanager()
     obj.currst.maxhits = 0
     for i,v in ipairs(obj.currst.level.events) do
       if v.type == "beat" or v.type == "slice" or v.type == "sliceinvert" or v.type == "inverse" or v.type == "hold" or v.type == "mine" or v.type == "side" or v.type == "minehold" or v.type == "ringcw" or v.type == "ringccw" then
-        obj.currst.maxhits = obj.currst.maxhits + 1
+        obj.currst.maxhits += obj.currst.maxhits
       end
     end
   
@@ -129,6 +129,7 @@ function gamemanager()
           newbeat.hb = v.time
           newbeat.smult = v.speedmult
           pq = pq .. "    ".. "hold spawn here! holdease: " .. tostring(newbeat.holdease) .. ", segments: " .. tostring(newbeat.segments)
+          
           newbeat.update()
         end
         if v.type == "minehold" then
@@ -146,7 +147,8 @@ function gamemanager()
           newbeat.hb = v.time
           newbeat.smult = v.speedmult
           pq = pq .. "    ".. "mine hold here!"
-                  newbeat.update()
+          
+          newbeat.update()
         end
         if v.type == "mine" then
           v.played = true
