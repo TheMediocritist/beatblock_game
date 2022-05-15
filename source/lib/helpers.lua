@@ -191,212 +191,7 @@ function helpers.anglepoints(x,y,a,b)
   return math.deg(math.atan2(x-a,y-b))*-1
 end
 
-function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, sprhold, ease, holdtype)
-  local interp = ease or "Linear"
-  local colortype = holdtype or "hold"
 
-  -- distances to the beginning and the end of the hold
-  local len1 = helpers.distance({xo, yo}, {x1, y1})
-  local len2 = helpers.distance({xo, yo}, {x2, y2})
-
-  -- how many segments to draw
-  -- based on the beat's angles by default, but can be overridden in the json
-  if interp == "Linear" then
-    segments = 1
-  elseif segments == nil then
-    segments = (math.abs(a2 - a1)/2)
-  end
-  
-  -- if segments == nil then
-  --   if interp == "Linear" then
-  --     segments = 1
-  --   else
-  --     segments = (math.abs(a2 - a1)/2 + 1)
-  --   end
-  -- else
-  --   segments += 1
-  -- end
-  
-  -- if segments == nil then
-  --   if interp == "Linear" then
-  --     segments = (math.abs(a2 - a1) / 8 + 1)
-  --   else
-  --     segments = (math.abs(a2 - a1) + 1)
-  --   end
-  -- else
-  --   segments += 1
-  -- end
-  
-  -- make an open polygon (line) to hold all the points connecting segments
-  -- tried to make left & right separate because it draws more neatly but can't sort the maths, so...
-  --local hold_line_l = playdate.geometry.polygon.new(segments + 1)
-  local hold_line_m = playdate.geometry.polygon.new(segments + 1)
-  --local hold_line_r = playdate.geometry.polygon.new(segments + 1)
-  local lastX, lastY = 0, 0
-  for i = 0, segments do
-    local t = i / segments
-    local angle_t = t * (1 - completion) + completion
-    -- coordinates of the next point
-    local nextAngle = math.rad(helpers.interpolate(a1, a2, angle_t, interp) - 90)
-    local nextDistance = helpers.lerp(len1, len2, t)
-    local offsetX = math.cos(nextAngle) * 6
-    local offsetY = math.sin(nextAngle) * 6
-    -- hold_line_l:setPointAt(i+1, 
-    --   math.cos(nextAngle) * nextDistance + screencenter.x + offsetX, 
-    --   math.sin(nextAngle) * nextDistance + screencenter.y - offsetY
-    -- )
-    -- hold_line_r:setPointAt(i+1, 
-    --   math.cos(nextAngle) * nextDistance + screencenter.x - offsetX, 
-    --   math.sin(nextAngle) * nextDistance + screencenter.y + offsetY
-    -- ) 
-    hold_line_m:setPointAt(i+1, 
-      math.cos(nextAngle) * nextDistance + screencenter.x, 
-      math.sin(nextAngle) * nextDistance + screencenter.y
-    ) 
-
-    lastX, lastY = hold_line_m:getPointAt(i+1)
-  end
-  hold_line_m:setPointAt(hold_line_m:count() + 1, x1, y1)
-
-  -- idk why but sometimes the last point doesn't reach the end of the slider
-  -- so add it manually if needed
-  --if hold_line_m:getPointAt(hold_line_m:count()).y ~= y2 then
-  if lastY ~= y2 then
-    hold_line_m:setPointAt(hold_line_m:count() + 1, x2, y2)
-  end
-  -- if (points[#points] ~= y2) then
-  --   points[#points+1] = x2
-  --   points[#points+1] = y2
-  -- end
-  
-  -- need at least 2 points to draw a line (2 points = 4 entries in points table)
-  if segments >= 1 then
-    
-    if colortype ~= "hold" then
-      gfx.setLineWidth(10)
-      gfx.drawPolygon(hold_line_m)
-    else
-      playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
-      playdate.graphics.setLineWidth(12)
-      gfx.setColor(gfx.kColorBlack)
-      gfx.drawPolygon(hold_line_m)
-      playdate.graphics.setLineWidth(8)
-      gfx.setColor(gfx.kColorWhite)
-      gfx.drawPolygon(hold_line_m)
-      
-      -- gfx.setLineWidth(2)
-      -- gfx.setColor(gfx.kColorBlack)
-      -- gfx.drawPolygon(hold_line_l)
-      -- gfx.drawPolygon(hold_line_r)
-    end
-
-  end
-  gfx.setColor(0)
-  
-  -- draw beginning and end of hold
-  sprhold:draw(x1-8,y1-8)--,0,1,1,8,8)
-  sprhold:draw(x2-8,y2-8)--,0,1,1,8,8)
-end
-
-function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)
-  local p = {}
-  if inverse then
-    p = helpers.rotate(-rad,angle,ox,oy)
-  else
-    p = helpers.rotate(rad,angle,ox,oy)
-  end
-  gfx.setColor(0)
-  gfx.setLineWidth(2)
-  -- gfx.pushContext() -- TEMP REMOVED
-  --love.graphics.translate(p[1], p[2]) -- TEMP REMOVED
-  --love.graphics.rotate((angle - 90) * math.pi / 180) -- TEMP REMOVED
-
-  -- draw the lines connecting the player to the paddle
-  gfx.drawLine(
-    0, 0,
-    (cs.p.paddle_distance + cs.extend) * math.cos(15 * math.pi / 180),
-    (cs.p.paddle_distance + cs.extend) * math.sin(15 * math.pi / 180)
-  )
-  gfx.drawLine(
-    0, 0,
-    (cs.p.paddle_distance + cs.extend) * math.cos(-15 * math.pi / 180),
-    (cs.p.paddle_distance + cs.extend) * math.sin(-15 * math.pi / 180)
-  )
-
-  -- draw the paddle
-  local paddle_angle = 30 / 2 * math.pi / 180
-  love.graphics.arc('line', 'open', 0, 0, (cs.p.paddle_distance + cs.extend), paddle_angle, -paddle_angle)
-  love.graphics.arc('line', 'open', 0, 0, (cs.p.paddle_distance + cs.extend) + cs.p.paddle_width, paddle_angle, -paddle_angle)
-  gfx.drawLine(
-    (cs.p.paddle_distance + cs.extend) * math.cos(paddle_angle),
-    (cs.p.paddle_distance + cs.extend) * math.sin(paddle_angle),
-    ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(paddle_angle),
-    ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(paddle_angle)
-  )
-  gfx.drawLine(
-    (cs.p.paddle_distance + cs.extend) * math.cos(-paddle_angle),
-    (cs.p.paddle_distance + cs.extend) * math.sin(-paddle_angle),
-    ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(-paddle_angle),
-    ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(-paddle_angle)
-  )
-  -- gfx.popContext()  -- TEMP REMOVED
-
-  gfx.setColor(1)
-  love.graphics.circle("fill",p[1],p[2],4+cs.extend/2)
-  gfx.setColor(0)
-  love.graphics.circle("line",p[1],p[2],4+cs.extend/2)
-
-  gfx.setColor(1)
- -- love.graphics.draw(cs.p.spr[cs.p.cemotion],obj.x,obj.y,0,1,1,16,16)
-
-  return p[1], p[2]
-end
-
-function helpers.drawgame()
-
-  gfx.clear()
-  gfx.setColor(playdate.graphics.kColorBlack)
-  
-  if cs.vfx.hom then
-    for i=0,10 do --cs.vfx.homint do
-      gfx.drawPixel(math.random(0,400),math.random(0,240))
-    end
-  end
-
-  --ouch the lag
-  -- if cs.vfx.bgnoise.enable then
-  --   love.graphics.setColor(cs.vfx.bgnoise.r,cs.vfx.bgnoise.g,cs.vfx.bgnoise.b,cs.vfx.bgnoise.a)
-  --   love.graphics.draw(cs.vfx.bgnoise.image,math.random(-2048+gameWidth,0),math.random(-2048+gameHeight,0))
-  -- end
-  -- love.graphics.draw(cs.bg)
-
-  gfx.setColor(1)
-  em.draw()
-  gfx.setColor(0)
-
-  gfx.drawText(cs.hits.." / " .. (cs.misses+cs.hits),10,10)
-  if cs.combo >= 2 then
-    gfx.setFont(DigitalDisco16)
-    gfx.drawText(cs.combo .. gfx.getLocalizedText("combo"),10,220)
-  end
-  gfx.setColor(1)
-end
-
-function helpers.rliid(fname)
-
-  local fname2 = ""
-  local offset = 0
-  if string.sub(fname,-1) == "/" then
-    fname = string.sub(fname,1,-2)
-  end
-  fname2 = fname:match(".*/(.*)")
-  if fname2 then
-    fname = string.sub(fname,1,-(string.len(fname2)+1))
-    return fname
-  else
-    return ""
-  end
-end
 function helpers.gradecalc(pct)
   local lgrade = ""
   local lgradepm = ""
@@ -459,6 +254,23 @@ function helpers.isanglebetween(a1,a2,a3)
     return false
   end
 end
+
+function helpers.rliid(fname)
+
+  local fname2 = ""
+  local offset = 0
+  if string.sub(fname,-1) == "/" then
+    fname = string.sub(fname,1,-2)
+  end
+  fname2 = fname:match(".*/(.*)")
+  if fname2 then
+    fname = string.sub(fname,1,-(string.len(fname2)+1))
+    return fname
+  else
+    return ""
+  end
+end
+
 --check if cursor is inside of (or on) a rectangle (x1 is left, x2 is right, y1 is top, y2 is bottom)
 function helpers.iscursorinrectangle(x1,x2,y1,y2,cursorx,cursory)
   if x2 >= cursorx and cursorx >= x1 and y2 >= cursory and cursory >= y1 then
