@@ -139,7 +139,7 @@ function SongSelectScene:draw()
   end
   em.draw()
   if cs.crank ~= "none" then
-    love.graphics.draw(sprites.songselect.grades[cs.crank],320,20)
+    --love.graphics.draw(sprites.songselect.grades[cs.crank],320,20)
   end
   if pq ~= "" then
     print(helpers.round(self.cbeat*6,true)/6 .. pq)

@@ -423,7 +423,6 @@ function beat()
     --local hold_line_l = playdate.geometry.polygon.new(segments + 1)
     --local hold_line_r = playdate.geometry.polygon.new(segments + 1)
     
-    local lastX, lastY = 0, 0
     for i = 1, segments do
       local t = i / segments
       local angle_t = t * (1 - completion) + completion
@@ -463,7 +462,7 @@ function beat()
     --   points[#points+1] = y2
     -- end
     
-    -- need at least 2 points to draw a line (2 points = 4 entries in points table)
+    -- need at least 2 points to draw a line (2 points = 1 segment)
     if segments >= 1 then
       playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
       if colortype == "hold" then
@@ -487,14 +486,13 @@ function beat()
         gfx.setLineWidth(4)
         gfx.drawPolygon(hold_line_m)
       end
-        
     end
     
     gfx.setColor(0)
     
     -- draw beginning and end of hold
-    sprhold:draw(x1-8,y1-8)--,0,1,1,8,8)
-    sprhold:draw(x2-8,y2-8)--,0,1,1,8,8)
+    sprhold:drawCentered(x1,y1)--,0,1,1,8,8)
+    sprhold:drawCentered(x2,y2)--,0,1,1,8,8)
   end
   
   function obj.drawslice (ox, oy, rad, angle, inverse, alpha)

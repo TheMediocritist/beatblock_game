@@ -45,7 +45,6 @@ function GameScene:update()
   updateDt()
   if not paused then
     if maininput.pressed("back") then
-      -- helpers.swap(states.songselect)
       Noble.transition(SongSelectScene)
     end
     --if maininput.pressed("a") then

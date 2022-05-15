@@ -68,28 +68,12 @@ function player()
 	function obj.draw()
 		local paddle_angle = obj.paddle_size / 2 --* math.pi / 180
 		local cranky_diameter = 16
-		local paddle_depth = 10
+		local paddle_depth = 8
 
 		gfx.setLineWidth(2)
 		gfx.setColor(0)
-
-		-- draw the paddle
 		gfx.pushContext()
-		-- love.graphics.translate(obj.x, obj.y)
-		-- love.graphics.rotate((obj.angle - 90) * math.pi / 180)
-
-		-- draw the lines connecting the player to the paddle
-		-- gfx.drawLine(
-		-- 	0, 0,
-		-- 	(obj.paddle_distance + cs.extend) * math.cos(obj.handle_size * math.pi / 180),
-		-- 	(obj.paddle_distance + cs.extend) * math.sin(obj.handle_size * math.pi / 180)
-		-- )
-		-- gfx.drawLine(
-		-- 	0, 0,
-		-- 	(obj.paddle_distance + cs.extend) * math.cos(-obj.handle_size * math.pi / 180),
-		-- 	(obj.paddle_distance + cs.extend) * math.sin(-obj.handle_size * math.pi / 180)
-		-- )
-
+		
 		-- draw the paddle
 		-- inner paddle arc
 		gfx.drawArc(obj.x, obj.y, (obj.paddle_distance), obj.angle - paddle_angle, obj.angle + paddle_angle)
@@ -121,13 +105,12 @@ function player()
 			obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
 			obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180)
 		)
-
 		gfx.popContext()
 
 		gfx.pushContext()
+		
 		-- scaling circle and face for hurt animation
 		local ouchpulsescale = 1 + obj.ouchpulse
-		-- love.graphics.scale(ouchpulsescale)
 
 		-- adjusting x and y so they're unaffected by scaling
 		local finalx = obj.x / ouchpulsescale
@@ -148,7 +131,6 @@ function player()
 		local eyex = (obj.lookradius) * math.cos((obj.angle - 90) * math.pi / 180)
 		local eyey = (obj.lookradius) * math.sin((obj.angle - 90) * math.pi / 180)
 		obj.spr[obj.cemotion]:draw(obj.x - cranky_diameter + eyex, obj.y - cranky_diameter + eyey, 0, 1, 1, 32, 32)
-		-- love.graphics.draw(obj.spr[obj.cemotion], finalx + eyex, finaly + eyey, 0, 1, 1, 16, 16)
 		gfx.popContext()
 	end
 

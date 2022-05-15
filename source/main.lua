@@ -103,9 +103,9 @@ sprites = {
     ringccw = gfx.image.new("assets/game/ringccw")
   },
   player = {
-    idle = gfx.image.new("assets/game/cranky/idle"),
-    happy = gfx.image.new("assets/game/cranky/happy"),
-    miss = gfx.image.new("assets/game/cranky/miss")
+    idle = gfx.image.new("assets/game/cranky/idle2"),
+    happy = gfx.image.new("assets/game/cranky/happy2"),
+    miss = gfx.image.new("assets/game/cranky/miss2")
   },
   songselect = {
     fg = gfx.image.new("assets/game/selectfg"),
