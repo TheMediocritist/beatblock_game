@@ -61,22 +61,6 @@ function helpers.swap(tsw)
 end
 
 
-function helpers.updatemouse()
-  if pressed == -1 then
-    pressed = 0
-  end
-  if love.mouse.isDown(1) then
-    pressed = pressed + 1
-  elseif pressed >=1 then
-    pressed = -1
-  else
-    pressed = 0
-  end
-  mx = helpers.round(((love.mouse.getX()/love.graphics.getWidth())*160),true)
-  my = helpers.round(((love.mouse.getY()/love.graphics.getHeight())*90),true)
-  --print('fps:'..love.timer.getFPS())
-end
-
 
 function helpers.clamp(val, lower, upper)
   if lower > upper then lower, upper = upper, lower end
@@ -217,16 +201,36 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
 
   -- how many segments to draw
   -- based on the beat's angles by default, but can be overridden in the json
-  if segments == nil then
-    if interp == "Linear" then
-      segments = (math.abs(a2 - a1) / 8 + 1)
-    else
-      segments = (math.abs(a2 - a1) + 1)
-    end
+  if interp == "Linear" then
+    segments = 1
+  elseif segments == nil then
+    segments = (math.abs(a2 - a1)/2) + 1
   end
-  local hold_line_l = playdate.geometry.polygon.new(segments)
+  
+  -- if segments == nil then
+  --   if interp == "Linear" then
+  --     segments = 1
+  --   else
+  --     segments = (math.abs(a2 - a1)/2 + 1)
+  --   end
+  -- else
+  --   segments += 1
+  -- end
+  
+  -- if segments == nil then
+  --   if interp == "Linear" then
+  --     segments = (math.abs(a2 - a1) / 8 + 1)
+  --   else
+  --     segments = (math.abs(a2 - a1) + 1)
+  --   end
+  -- else
+  --   segments += 1
+  -- end
+  
+  --local hold_line_l = playdate.geometry.polygon.new(segments)
   local hold_line_m = playdate.geometry.polygon.new(segments)
-  local hold_line_r = playdate.geometry.polygon.new(segments)
+  --local hold_line_r = playdate.geometry.polygon.new(segments)
+  local lastX, lastY = 0, 0
   for i = 0, segments do
     local t = i / segments
     local angle_t = t * (1 - completion) + completion
@@ -235,23 +239,29 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
     local nextDistance = helpers.lerp(len1, len2, t)
     local offsetX = math.cos(nextAngle) * 6
     local offsetY = math.sin(nextAngle) * 6
-    hold_line_l:setPointAt(i+1, 
-      math.cos(nextAngle) * nextDistance + screencenter.x - offsetX, 
-      math.sin(nextAngle) * nextDistance + screencenter.y - offsetY
-    )
+    -- hold_line_l:setPointAt(i+1, 
+    --   math.cos(nextAngle) * nextDistance + screencenter.x + offsetX, 
+    --   math.sin(nextAngle) * nextDistance + screencenter.y - offsetY
+    -- )
+    -- hold_line_r:setPointAt(i+1, 
+    --   math.cos(nextAngle) * nextDistance + screencenter.x - offsetX, 
+    --   math.sin(nextAngle) * nextDistance + screencenter.y + offsetY
+    -- ) 
     hold_line_m:setPointAt(i+1, 
       math.cos(nextAngle) * nextDistance + screencenter.x, 
       math.sin(nextAngle) * nextDistance + screencenter.y
     ) 
-    hold_line_r:setPointAt(i+1, 
-      math.cos(nextAngle) * nextDistance + screencenter.x + offsetX, 
-      math.sin(nextAngle) * nextDistance + screencenter.y + offsetY
-    )  
+
+    lastX, lastY = hold_line_m:getPointAt(i+1)
   end
-  
+  hold_line_m:setPointAt(hold_line_m:count() + 1, x1, y1)
 
   -- idk why but sometimes the last point doesn't reach the end of the slider
   -- so add it manually if needed
+  --if hold_line_m:getPointAt(hold_line_m:count()).y ~= y2 then
+  if lastY ~= y2 then
+    hold_line_m:setPointAt(hold_line_m:count() + 1, x2, y2)
+  end
   -- if (points[#points] ~= y2) then
   --   points[#points+1] = x2
   --   points[#points+1] = y2
@@ -264,18 +274,26 @@ function helpers.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, 
       gfx.setLineWidth(10)
       gfx.drawPolygon(hold_line_m)
     else
-      gfx.setLineWidth(2)
+      playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
+      playdate.graphics.setLineWidth(12)
       gfx.setColor(gfx.kColorBlack)
-      gfx.drawPolygon(hold_line_l)
-      gfx.drawPolygon(hold_line_r)
+      gfx.drawPolygon(hold_line_m)
+      playdate.graphics.setLineWidth(8)
+      gfx.setColor(gfx.kColorWhite)
+      gfx.drawPolygon(hold_line_m)
+      
+      -- gfx.setLineWidth(2)
+      -- gfx.setColor(gfx.kColorBlack)
+      -- gfx.drawPolygon(hold_line_l)
+      -- gfx.drawPolygon(hold_line_r)
     end
 
   end
   gfx.setColor(0)
   
   -- draw beginning and end of hold
-  sprhold:draw(x1,y1,0,1,1,8,8)
-  sprhold:draw(x2,y2,0,1,1,8,8)
+  sprhold:draw(x1-8,y1-8)--,0,1,1,8,8)
+  sprhold:draw(x2-8,y2-8)--,0,1,1,8,8)
 end
 
 function helpers.drawslice (ox, oy, rad, angle, inverse, alpha)

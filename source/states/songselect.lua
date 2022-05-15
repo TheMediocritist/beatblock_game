@@ -54,8 +54,6 @@ function SongSelectScene:exit(prev)
   self.p=nil
 end
 
-
-
 function SongSelectScene:update()
   updateDt()
   pq = ""
@@ -131,9 +129,9 @@ function SongSelectScene:draw()
   for i,v in ipairs(self.levels) do
     if v.islevel then
       gfx.setFont(DigitalDisco16)
-      gfx.drawText(v.songname,10,70+i*60+self.dispy)
+      gfx.drawText(v.songname,10,69+i*60+self.dispy)
       gfx.setFont(DigitalDisco12)
-      gfx.drawText(v.artist,10,100+i*60+self.dispy)
+      gfx.drawText(v.artist,10,96+i*60+self.dispy)
     else
       gfx.setFont(DigitalDisco16)
       gfx.drawText(v.name,10,76+i*60+self.dispy)
