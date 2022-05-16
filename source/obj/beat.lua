@@ -413,10 +413,11 @@ function beat()
     if interp == "Linear" then
       segments = 1
     elseif segments == nil then
-      segments = (math.abs(a2 - a1)/2)
+      segments = math.floor(math.abs(a2 - a1)/2)
     end
     
     -- make an open polygon (line) to hold all the points connecting segments - there should be 1 more point than n segments
+    print("drawing new hold, type: " .. colortype .. ", segments: " .. segments .. ", points: " .. tostring(segments + 1))
     local hold_line_m = playdate.geometry.polygon.new(segments + 1)
     
     -- tried to make left & right separate because it draws more neatly but can't sort the maths...
