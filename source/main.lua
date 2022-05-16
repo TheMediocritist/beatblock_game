@@ -36,19 +36,16 @@ Axolotl12 = gfx.font.new("assets/fonts/Axolotl-12")
 DigitalDisco12 = gfx.font.new("assets/fonts/DigitalDisco-12")
 DigitalDisco16 = gfx.font.new("assets/fonts/DigitalDisco-16")
 DigitalDisco24 = gfx.font.new("assets/fonts/DigitalDisco-24")
-sdk_font = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold")
 
+gfx.setFont(DigitalDisco16)
 
--- love.graphics.setFont(DigitalDisco16)
 -- accurate deltatime
 acdelt = true
-
 
 -- import libraries
 
 -- custom functions, snippets, etc
 helpers = import "lib/helpers"
-
 
 -- quickly load json files
 -- dpf = import "lib/dpf"
@@ -103,9 +100,9 @@ sprites = {
     ringccw = gfx.image.new("assets/game/ringccw")
   },
   player = {
-    idle = gfx.image.new("assets/game/cranky/idle2"),
-    happy = gfx.image.new("assets/game/cranky/happy2"),
-    miss = gfx.image.new("assets/game/cranky/miss2")
+    idle = gfx.image.new("assets/game/cranky/idle"),
+    happy = gfx.image.new("assets/game/cranky/happy"),
+    miss = gfx.image.new("assets/game/cranky/miss")
   },
   songselect = {
     fg = gfx.image.new("assets/game/selectfg"),

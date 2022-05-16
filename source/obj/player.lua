@@ -76,35 +76,37 @@ function player()
 		
 		-- draw the paddle
 		-- inner paddle arc
-		gfx.drawArc(obj.x, obj.y, (obj.paddle_distance), obj.angle - paddle_angle, obj.angle + paddle_angle)
+		--g.drawEllipseInRect(x-radius, y-radius, d, d, startAngle, endAngle)	
+		gfx.drawEllipseInRect(obj.x - obj.paddle_distance, obj.y - obj.paddle_distance, obj.paddle_distance * 2, obj.paddle_distance * 2, obj.angle - paddle_angle, obj.angle + paddle_angle)
+		--gfx.drawArc(math.floor(obj.x), math.floor(obj.y), math.floor(obj.paddle_distance), math.floor(obj.angle - paddle_angle), math.floor(obj.angle + paddle_angle))
 		-- outer paddle arc
-		gfx.drawArc(obj.x, obj.y, (obj.paddle_distance + paddle_depth), obj.angle - paddle_angle, obj.angle + paddle_angle)
-		-- lhs connector
-		gfx.drawLine(
-			obj.x, obj.y, 
-			obj.x + obj.paddle_distance * math.cos((obj.angle - paddle_angle/2 - 90) * math.pi / 180), 
-			obj.y + obj.paddle_distance * math.sin((obj.angle - paddle_angle/2 - 90) * math.pi / 180)
-		)
-		-- rhs connector
-		gfx.drawLine(
-			obj.x, obj.y, 
-			obj.x + obj.paddle_distance * math.cos((obj.angle + paddle_angle/2 - 90) * math.pi / 180), 
-			obj.y + obj.paddle_distance * math.sin((obj.angle + paddle_angle/2 - 90) * math.pi / 180)
-		)
-		-- lhs paddle
-		gfx.drawLine(
-			obj.x + obj.paddle_distance * math.cos((obj.angle + paddle_angle - 90) * math.pi / 180), 
-			obj.y + obj.paddle_distance * math.sin((obj.angle + paddle_angle - 90) * math.pi / 180),
-			obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle + paddle_angle - 90) * math.pi / 180), 
-			obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle + paddle_angle - 90) * math.pi / 180)
-		)
-		-- rhs paddle
-		gfx.drawLine(
-			obj.x + obj.paddle_distance * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
-			obj.y + obj.paddle_distance * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180),
-			obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
-			obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180)
-		)
+		gfx.drawArc(math.floor(obj.x), math.floor(obj.y), math.floor(obj.paddle_distance + paddle_depth), math.floor(obj.angle - paddle_angle), math.floor(obj.angle + paddle_angle))
+		-- -- lhs connector
+		-- gfx.drawLine(
+		-- 	obj.x, obj.y, 
+		-- 	obj.x + obj.paddle_distance * math.cos((obj.angle - paddle_angle/2 - 90) * math.pi / 180), 
+		-- 	obj.y + obj.paddle_distance * math.sin((obj.angle - paddle_angle/2 - 90) * math.pi / 180)
+		-- )
+		-- -- rhs connector
+		-- gfx.drawLine(
+		-- 	obj.x, obj.y, 
+		-- 	obj.x + obj.paddle_distance * math.cos((obj.angle + paddle_angle/2 - 90) * math.pi / 180), 
+		-- 	obj.y + obj.paddle_distance * math.sin((obj.angle + paddle_angle/2 - 90) * math.pi / 180)
+		-- )
+		-- -- lhs paddle
+		-- gfx.drawLine(
+		-- 	obj.x + obj.paddle_distance * math.cos((obj.angle + paddle_angle - 90) * math.pi / 180), 
+		-- 	obj.y + obj.paddle_distance * math.sin((obj.angle + paddle_angle - 90) * math.pi / 180),
+		-- 	obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle + paddle_angle - 90) * math.pi / 180), 
+		-- 	obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle + paddle_angle - 90) * math.pi / 180)
+		-- )
+		-- -- rhs paddle
+		-- gfx.drawLine(
+		-- 	obj.x + obj.paddle_distance * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
+		-- 	obj.y + obj.paddle_distance * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180),
+		-- 	obj.x + (obj.paddle_distance + paddle_depth) * math.cos((obj.angle - paddle_angle - 90) * math.pi / 180), 
+		-- 	obj.y + (obj.paddle_distance + paddle_depth) * math.sin((obj.angle - paddle_angle - 90) * math.pi / 180)
+		-- )
 		gfx.popContext()
 
 		gfx.pushContext()
@@ -113,8 +115,8 @@ function player()
 		local ouchpulsescale = 1 + obj.ouchpulse
 
 		-- adjusting x and y so they're unaffected by scaling
-		local finalx = obj.x / ouchpulsescale
-		local finaly = obj.y / ouchpulsescale
+		local finalx = math.floor(obj.x / ouchpulsescale)
+		local finaly = math.floor(obj.y / ouchpulsescale)
 
 		-- draw cranky
 		-- draw the circle
@@ -130,8 +132,20 @@ function player()
 		-- determine x and y offsets of the eyes
 		local eyex = (obj.lookradius) * math.cos((obj.angle - 90) * math.pi / 180)
 		local eyey = (obj.lookradius) * math.sin((obj.angle - 90) * math.pi / 180)
-		obj.spr[obj.cemotion]:draw(obj.x - cranky_diameter + eyex, obj.y - cranky_diameter + eyey, 0, 1, 1, 32, 32)
+		obj.spr[obj.cemotion]:draw(math.floor(obj.x - cranky_diameter + eyex), math.floor(obj.y - cranky_diameter + eyey))--, 0, 1, 1, 32, 32)
+		
+		--temp draw debug
+		gfx.setColor(0)
+		local debugdot1x = 50 * math.cos((obj.angle - 90 +paddle_angle) * math.pi / 180)
+		local debugdot1y = 50 * math.sin((obj.angle - 90 + paddle_angle) * math.pi / 180)
+		gfx.fillCircleAtPoint(obj.x + debugdot1x, obj.y + debugdot1y,3)
+		local debugdot1x = 50 * math.cos((obj.angle - 90 -paddle_angle) * math.pi / 180)
+		local debugdot1y = 50 * math.sin((obj.angle - 90 - paddle_angle) * math.pi / 180)
+		gfx.fillCircleAtPoint(obj.x + debugdot1x, obj.y + debugdot1y,3)
+				
 		gfx.popContext()
+		
+
 	end
 
 	function obj.hurtpulse()

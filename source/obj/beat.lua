@@ -375,18 +375,18 @@ function beat()
       if not obj.hold and not obj.minehold then
         local scaleval = ((obj.hb-cs.cbeat)*cs.level.properties.speed*obj.smult)/37+1.25
         if obj.inverse then
-          obj.spr2:draw(obj.x,obj.y)--,0,1,1,16,16)
+          obj.spr2:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,16,16)
         elseif obj.mine then
-          obj.spr4:draw(obj.x,obj.y)--,0,1,1,16,16)
+          obj.spr4:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,16,16)
         elseif obj.side then
           --obj.spr5:draw(obj.x,obj.y,math.rad(obj.angle),1,1,12,10)
-          obj.spr5:draw(obj.x,obj.y)--,0,1,1,24,20)
+          obj.spr5:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,24,20)
         elseif obj.ringcw then
           obj.spr7:draw(200,120,math.rad(30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         elseif obj.ringccw then
           obj.spr8:draw(200,120,math.rad(-30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         else
-          obj.spr:draw(obj.x,obj.y,0,1,1,16,16)
+          obj.spr:draw(math.floor(obj.x), math.floor(obj.y)) --,0,1,1,16,16)
         end
       elseif obj.hold then
         local completion = math.max(0, (cs.cbeat - obj.hb) / obj.duration)
@@ -413,44 +413,56 @@ function beat()
     if interp == "Linear" then
       segments = 1
     elseif segments == nil then
-      segments = math.floor(math.abs(a2 - a1)/2)
+      segments = math.floor(math.abs(a2 - a1)/3) -- /3 to reduce segments - 4 is a bit jagged but 3 looks okay?
     end
     
     -- make an open polygon (line) to hold all the points connecting segments - there should be 1 more point than n segments
-    print("drawing new hold, type: " .. colortype .. ", segments: " .. segments .. ", points: " .. tostring(segments + 1))
+    print("drawing new hold, type: " .. colortype .. ", segments: " .. segments .. ", points: " .. tostring(segments + 1) .. ", completion: " .. completion)
     local hold_line_m = playdate.geometry.polygon.new(segments + 1)
     
     -- tried to make left & right separate because it draws more neatly but can't sort the maths...
-    --local hold_line_l = playdate.geometry.polygon.new(segments + 1)
-    --local hold_line_r = playdate.geometry.polygon.new(segments + 1)
+    local hold_line_l = playdate.geometry.polygon.new(segments + 1)
+    local hold_line_r = playdate.geometry.polygon.new(segments + 1)
     
     for i = 1, segments do
+      
       local t = i / segments
       local angle_t = t * (1 - completion) + completion
       -- coordinates of the next point
       local nextAngle = math.rad(helpers.interpolate(a1, a2, angle_t, interp) - 90)
       local nextDistance = helpers.lerp(len1, len2, t)
+      print("nextAngle, nextDistance: " .. nextAngle .. ", " .. nextDistance)
       
+      local offset_lr = 6
+      local offsetX = math.sin(nextAngle + math.rad(45)) * offset_lr
+      local offsetY = math.cos(nextAngle + math.rad(45)) * offset_lr
       ---- failed implementation of dual lines
-      -- local offsetX = math.cos(nextAngle) * 6
-      -- local offsetY = math.sin(nextAngle) * 6
-      -- hold_line_l:setPointAt(i+1, 
-      --   math.cos(nextAngle) * nextDistance + screencenter.x + offsetX, 
-      --   math.sin(nextAngle) * nextDistance + screencenter.y - offsetY
-      -- )
-      -- hold_line_r:setPointAt(i+1, 
-      --   math.cos(nextAngle) * nextDistance + screencenter.x - offsetX, 
-      --   math.sin(nextAngle) * nextDistance + screencenter.y + offsetY
-      -- ) 
-      hold_line_m:setPointAt(i+1, 
-        math.cos(nextAngle) * nextDistance + screencenter.x, 
-        math.sin(nextAngle) * nextDistance + screencenter.y
+      hold_line_l:setPointAt(i+1, 
+        math.cos(nextAngle) * (nextDistance) + screencenter.x + offsetX, 
+        math.sin(nextAngle) * (nextDistance) + screencenter.y - offsetY
+      )
+      hold_line_r:setPointAt(i+1, 
+        math.cos(nextAngle) * (nextDistance) + screencenter.x - offsetX, 
+        math.sin(nextAngle) * (nextDistance) + screencenter.y + offsetY
       ) 
+      -- hold_line_m:setPointAt(i+1, 
+      --   math.cos(nextAngle) * nextDistance + screencenter.x, 
+      --   math.sin(nextAngle) * nextDistance + screencenter.y
+      -- ) 
     end
     
     -- add the start and end points
+    local offset_lr = 6
+    local offsetX = math.sin(a1 + math.rad(45)) * offset_lr
+    local offsetY = math.cos(a1 + math.rad(45)) * offset_lr
     hold_line_m:setPointAt(1, x1, y1)
     hold_line_m:setPointAt(hold_line_m:count(), x2, y2)
+    hold_line_l:setPointAt(1, x1 + offsetX, y1 - offsetY)
+    hold_line_l:setPointAt(hold_line_m:count(), x2 + offsetX, y2 + offsetY)
+    local offsetX = math.sin(a2 + math.rad(45)) * offset_lr
+    local offsetY = math.cos(a2 + math.rad(45)) * offset_lr
+    hold_line_r:setPointAt(1, x1 - offsetX, y1 + offsetY)
+    hold_line_r:setPointAt(hold_line_m:count(), x2 - offsetX, y2 + offsetY)
   
     -- idk why but sometimes the last point doesn't reach the end of the slider
     -- so add it manually if needed
@@ -463,16 +475,15 @@ function beat()
     --   points[#points+1] = y2
     -- end
     
-    -- need at least 2 points to draw a line (2 points = 1 segment)
     if segments >= 1 then
       playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
       if colortype == "hold" then
-        playdate.graphics.setLineWidth(12)
+        playdate.graphics.setLineWidth(2)
         gfx.setColor(gfx.kColorBlack)
-        gfx.drawPolygon(hold_line_m)
-        playdate.graphics.setLineWidth(8)
-        gfx.setColor(gfx.kColorWhite)
-        gfx.drawPolygon(hold_line_m)
+        gfx.drawPolygon(hold_line_l)
+        --playdate.graphics.setLineWidth(8)
+        --gfx.setColor(gfx.kColorWhite)
+        gfx.drawPolygon(hold_line_r)
       elseif colortype == "minehold" then 
         playdate.graphics.setLineWidth(12)
         gfx.setColor(gfx.kColorBlack)
@@ -489,11 +500,37 @@ function beat()
       end
     end
     
+    -- need at least 2 points to draw a line (2 points = 1 segment)
+    -- if segments >= 1 then
+    --   playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
+    --   if colortype == "hold" then
+    --     playdate.graphics.setLineWidth(12)
+    --     gfx.setColor(gfx.kColorBlack)
+    --     gfx.drawPolygon(hold_line_m)
+    --     playdate.graphics.setLineWidth(8)
+    --     gfx.setColor(gfx.kColorWhite)
+    --     gfx.drawPolygon(hold_line_m)
+    --   elseif colortype == "minehold" then 
+    --     playdate.graphics.setLineWidth(12)
+    --     gfx.setColor(gfx.kColorBlack)
+    --     gfx.drawPolygon(hold_line_m)
+    --     playdate.graphics.setLineWidth(8)
+    --     gfx.setColor(gfx.kColorWhite)
+    --     gfx.drawPolygon(hold_line_m)
+    --     playdate.graphics.setLineWidth(4)
+    --     gfx.setColor(gfx.kColorBlack)
+    --     gfx.drawPolygon(hold_line_m)
+    --   else
+    --     gfx.setLineWidth(4)
+    --     gfx.drawPolygon(hold_line_m)
+    --   end
+    -- end
+    
     gfx.setColor(0)
     
     -- draw beginning and end of hold
-    sprhold:drawCentered(x1,y1)--,0,1,1,8,8)
-    sprhold:drawCentered(x2,y2)--,0,1,1,8,8)
+    sprhold:drawCentered(math.floor(x1), math.floor(y1))--,0,1,1,8,8)
+    sprhold:drawCentered(math.floor(x2), math.floor(y2))--,0,1,1,8,8)
   end
   
   function obj.drawslice (ox, oy, rad, angle, inverse, alpha)
