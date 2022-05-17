@@ -57,10 +57,7 @@ function gamemanager()
     -- preload events such as beats
       if v.time <= obj.currst.cbeat+obj.currst.offset and v.played == false then
         if v.type == "play" and obj.currst.sounddata == nil then
-          -- print("gamemanager.lua [60] v.bpm=" .. v.bpm)
           obj.currst.level.bpm = v.bpm
-          -- print("gammanger.lua [61] sounddata: " .. clevel..v.file)
-          -- obj.currst.sounddata = snd.sampleplayer.new(clevel..v.file)
           obj.currst.sounddata = (clevel..v.file)
          pq = pq .. "      loaded sounddata"
   
@@ -217,23 +214,15 @@ function gamemanager()
       if v.time <= obj.currst.cbeat and v.played == false then
         v.played = true
         if v.type == "play" then
-          -- print("obj.currst.source: ")
-          --print(obj.currst.source)
-          -- print("gammanager.lua [224] obj.currst.sounddata:")
-          --print(obj.currst.sounddata)
           obj.currst.sounddata = snd.sampleplayer.new(obj.currst.sounddata, 2)
-          -- print("gammanager.lua [228] obj.currst.sounddata:")
-          --print(obj.currst.sounddata)
           obj.currst.source = pdbpm:newTrack(obj.currst.sounddata)
           obj.currst.source:load(obj.currst.sounddata)
-          -- print("gamemanager.lua [229] obj.currst.source: " .. tostring(obj.currst.source))
           obj.currst.source:setBPM(v.bpm)
           obj.currst.source:setLooping(false)
           obj.currst.source:play()
           obj.currst.source:on("end", function(f) print("song finished!!!!!!!!!!") obj.songfinished = true end)
           obj.currst.source:setBeat(obj.currst.cbeat)
           pq = pq .. "    ".. "now playing ".. v.file
-          -- print("gammanager.lua [234] obj.currst.source: " .. tostring(obj.currst.source))
         end
         if v.type == "setBPM" then
           obj.currst.source:setBPM(v.bpm, v.time)
@@ -323,8 +312,6 @@ function gamemanager()
       end
     end
     
-    -- print("gamemanager.lua [322] obj.currst.source: " .. tostring(obj.currst.source))
-    -- print("gamemanager.lua [322] obj.currst.cbeat: " .. tostring(obj.currst.cbeat))
     if obj.currst.source == nil or obj.songfinished then
       obj.currst.cbeat = obj.currst.cbeat + (obj.currst.level.bpm/60) * dt
     else

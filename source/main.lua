@@ -36,7 +36,6 @@ Axolotl12 = gfx.font.new("assets/fonts/Axolotl-12")
 DigitalDisco12 = gfx.font.new("assets/fonts/DigitalDisco-12")
 DigitalDisco16 = gfx.font.new("assets/fonts/DigitalDisco-16")
 DigitalDisco24 = gfx.font.new("assets/fonts/DigitalDisco-24")
-
 gfx.setFont(DigitalDisco16)
 
 -- accurate deltatime

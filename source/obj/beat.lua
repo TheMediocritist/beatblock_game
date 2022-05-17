@@ -359,14 +359,12 @@ function beat()
         cs.p.cemotion = "miss"
         cs.p.hurtpulse()
         if cs.beatsounds then
-          -- TEMP TEST
           te.play(sounds.mine, "static")
-          --te.play(sounds.mine,"static")
         end
       end
       
-    
     end
+    
   end
   
   function obj.draw()  
@@ -380,7 +378,7 @@ function beat()
           obj.spr4:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,16,16)
         elseif obj.side then
           --obj.spr5:draw(obj.x,obj.y,math.rad(obj.angle),1,1,12,10)
-          obj.spr5:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,24,20)
+          obj.spr5:drawRotated(math.floor(obj.x), math.floor(obj.y), obj.angle)--,0,1,1,24,20)
         elseif obj.ringcw then
           obj.spr7:draw(200,120,math.rad(30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         elseif obj.ringccw then
@@ -401,6 +399,7 @@ function beat()
   end
   
   function obj.drawhold(xo, yo, x1, y1, x2, y2, completion, a1, a2, segments, sprhold, ease, holdtype)
+    
     local interp = ease or "Linear"
     local colortype = holdtype or "hold"
   
@@ -417,52 +416,25 @@ function beat()
     end
     
     -- make an open polygon (line) to hold all the points connecting segments - there should be 1 more point than n segments
-    print("drawing new hold, type: " .. colortype .. ", segments: " .. segments .. ", points: " .. tostring(segments + 1) .. ", completion: " .. completion)
     local hold_line_m = playdate.geometry.polygon.new(segments + 1)
-    
-    -- tried to make left & right separate because it draws more neatly but can't sort the maths...
-    local hold_line_l = playdate.geometry.polygon.new(segments + 1)
-    local hold_line_r = playdate.geometry.polygon.new(segments + 1)
     
     for i = 1, segments do
       
       local t = i / segments
       local angle_t = t * (1 - completion) + completion
+      
       -- coordinates of the next point
       local nextAngle = math.rad(helpers.interpolate(a1, a2, angle_t, interp) - 90)
       local nextDistance = helpers.lerp(len1, len2, t)
-      print("nextAngle, nextDistance: " .. nextAngle .. ", " .. nextDistance)
-      
-      local offset_lr = 6
-      local offsetX = math.sin(nextAngle + math.rad(45)) * offset_lr
-      local offsetY = math.cos(nextAngle + math.rad(45)) * offset_lr
-      ---- failed implementation of dual lines
-      hold_line_l:setPointAt(i+1, 
-        math.cos(nextAngle) * (nextDistance) + screencenter.x + offsetX, 
-        math.sin(nextAngle) * (nextDistance) + screencenter.y - offsetY
-      )
-      hold_line_r:setPointAt(i+1, 
-        math.cos(nextAngle) * (nextDistance) + screencenter.x - offsetX, 
-        math.sin(nextAngle) * (nextDistance) + screencenter.y + offsetY
+
+      hold_line_m:setPointAt(i+1, 
+        math.cos(nextAngle) * nextDistance + screencenter.x, 
+        math.sin(nextAngle) * nextDistance + screencenter.y
       ) 
-      -- hold_line_m:setPointAt(i+1, 
-      --   math.cos(nextAngle) * nextDistance + screencenter.x, 
-      --   math.sin(nextAngle) * nextDistance + screencenter.y
-      -- ) 
     end
     
-    -- add the start and end points
-    local offset_lr = 6
-    local offsetX = math.sin(a1 + math.rad(45)) * offset_lr
-    local offsetY = math.cos(a1 + math.rad(45)) * offset_lr
+    -- add the start point
     hold_line_m:setPointAt(1, x1, y1)
-    hold_line_m:setPointAt(hold_line_m:count(), x2, y2)
-    hold_line_l:setPointAt(1, x1 + offsetX, y1 - offsetY)
-    hold_line_l:setPointAt(hold_line_m:count(), x2 + offsetX, y2 + offsetY)
-    local offsetX = math.sin(a2 + math.rad(45)) * offset_lr
-    local offsetY = math.cos(a2 + math.rad(45)) * offset_lr
-    hold_line_r:setPointAt(1, x1 - offsetX, y1 + offsetY)
-    hold_line_r:setPointAt(hold_line_m:count(), x2 - offsetX, y2 + offsetY)
   
     -- idk why but sometimes the last point doesn't reach the end of the slider
     -- so add it manually if needed
@@ -478,12 +450,12 @@ function beat()
     if segments >= 1 then
       playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
       if colortype == "hold" then
-        playdate.graphics.setLineWidth(2)
+        playdate.graphics.setLineWidth(12)
         gfx.setColor(gfx.kColorBlack)
-        gfx.drawPolygon(hold_line_l)
-        --playdate.graphics.setLineWidth(8)
-        --gfx.setColor(gfx.kColorWhite)
-        gfx.drawPolygon(hold_line_r)
+        gfx.drawPolygon(hold_line_m)
+        playdate.graphics.setLineWidth(8)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.drawPolygon(hold_line_m)
       elseif colortype == "minehold" then 
         playdate.graphics.setLineWidth(12)
         gfx.setColor(gfx.kColorBlack)
@@ -500,37 +472,11 @@ function beat()
       end
     end
     
-    -- need at least 2 points to draw a line (2 points = 1 segment)
-    -- if segments >= 1 then
-    --   playdate.graphics.setLineCapStyle(playdate.graphics.kLineCapStyleRound)
-    --   if colortype == "hold" then
-    --     playdate.graphics.setLineWidth(12)
-    --     gfx.setColor(gfx.kColorBlack)
-    --     gfx.drawPolygon(hold_line_m)
-    --     playdate.graphics.setLineWidth(8)
-    --     gfx.setColor(gfx.kColorWhite)
-    --     gfx.drawPolygon(hold_line_m)
-    --   elseif colortype == "minehold" then 
-    --     playdate.graphics.setLineWidth(12)
-    --     gfx.setColor(gfx.kColorBlack)
-    --     gfx.drawPolygon(hold_line_m)
-    --     playdate.graphics.setLineWidth(8)
-    --     gfx.setColor(gfx.kColorWhite)
-    --     gfx.drawPolygon(hold_line_m)
-    --     playdate.graphics.setLineWidth(4)
-    --     gfx.setColor(gfx.kColorBlack)
-    --     gfx.drawPolygon(hold_line_m)
-    --   else
-    --     gfx.setLineWidth(4)
-    --     gfx.drawPolygon(hold_line_m)
-    --   end
-    -- end
-    
     gfx.setColor(0)
     
     -- draw beginning and end of hold
-    sprhold:drawCentered(math.floor(x1), math.floor(y1))--,0,1,1,8,8)
-    sprhold:drawCentered(math.floor(x2), math.floor(y2))--,0,1,1,8,8)
+    sprhold:drawCentered(math.floor(x1), math.floor(y1))
+    sprhold:drawCentered(math.floor(x2), math.floor(y2))
   end
   
   function obj.drawslice (ox, oy, rad, angle, inverse, alpha)
@@ -560,8 +506,8 @@ function beat()
   
     -- draw the paddle
     local paddle_angle = 30 / 2 * math.pi / 180
-    love.graphics.arc('line', 'open', 0, 0, (cs.p.paddle_distance + cs.extend), paddle_angle, -paddle_angle)
-    love.graphics.arc('line', 'open', 0, 0, (cs.p.paddle_distance + cs.extend) + cs.p.paddle_width, paddle_angle, -paddle_angle)
+    gfx.drawArc(0, 0, (cs.p.paddle_distance + cs.extend), paddle_angle, -paddle_angle)
+    gfx.drawArc(0, 0, (cs.p.paddle_distance + cs.extend) + cs.p.paddle_width, paddle_angle, -paddle_angle)
     gfx.drawLine(
       (cs.p.paddle_distance + cs.extend) * math.cos(paddle_angle),
       (cs.p.paddle_distance + cs.extend) * math.sin(paddle_angle),
@@ -577,12 +523,12 @@ function beat()
     -- gfx.popContext()  -- TEMP REMOVED
   
     gfx.setColor(1)
-    love.graphics.circle("fill",p[1],p[2],4+cs.extend/2)
+    gfx.fillCircleAtPoint(p[1],p[2],4+cs.extend/2)
     gfx.setColor(0)
-    love.graphics.circle("line",p[1],p[2],4+cs.extend/2)
+    gfx.drawCircleAtPoint(p[1],p[2],4+cs.extend/2)
   
     gfx.setColor(1)
-   -- love.graphics.draw(cs.p.spr[cs.p.cemotion],obj.x,obj.y,0,1,1,16,16)
+    cs.p.spr[cs.p.cemotion]:draw(obj.x,obj.y)
   
     return p[1], p[2]
   end

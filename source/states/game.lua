@@ -17,8 +17,6 @@ function GameScene:enter(prev)
   self.gm = em.init("gamemanager", screenwidth/2, screenheight/2)
   self.gm.init(self)
 
-  self.canvas = gfx.image.new(screenwidth, screenheight)
-
   self.level = json.decodeFile(clevel .. "level.json")
   self.gm.resetlevel()
   self.gm.on = true
@@ -58,19 +56,14 @@ end
 
 
 function GameScene:draw()
-  --shuv.start()
-  
-  --gfx.fillRect(0, 0, screenwidth, screenheight)
   
   -- draw game to canvas
-  gfx.lockFocus(self.canvas)
+  gfx.pushContext()
   self.drawgame()
-  gfx.unlockFocus()
   
   -- draw canvas to screen
-  self.canvas:draw(0,0)
-  
-  -- ??? Wot this?
+  gfx.popContext()
+
   if pq ~= "" then
     print(helpers.round(self.cbeat*8,true)/8 .. pq)
   end

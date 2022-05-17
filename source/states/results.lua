@@ -23,8 +23,6 @@ function ResultsScene:enter(prev)
   self.timesplayed = 0
   self.storepctgrade = self.pctgrade
   self.storemisses = cs.misses
-  -- print("results.lua [25] cs.level")
-  -- printTable(cs.level)
   -- if self.pljson ~= nil then
   --   self.timesplayed = 1
   -- else
@@ -101,8 +99,8 @@ function ResultsScene:draw()
   if self.lgradepm ~= "none" then
     sprites.results.grades[self.lgradepm]:draw(202,61)
   end
-  gfx.drawTextAligned("hits: " .. cs.gm.currst.misses, 200, 135, kTextAlignment.center)
-  gfx.drawTextAligned("misses: " .. cs.gm.currst.hits, 200, 158, kTextAlignment.center)
+  gfx.drawTextAligned("hits: " .. cs.gm.currst.hits, 200, 135, kTextAlignment.center)
+  gfx.drawTextAligned("misses: " .. cs.gm.currst.misses, 200, 158, kTextAlignment.center)
   
   -- draw buttons
   gfx.setFont(DigitalDisco12)
