@@ -52,6 +52,7 @@ function GameScene:update()
     flux.update(1)
     em.update(dt)
   end
+
 end
 
 

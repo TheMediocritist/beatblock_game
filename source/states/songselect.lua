@@ -50,8 +50,8 @@ end
 
 function SongSelectScene:exit(prev)
 	SongSelectScene.super.exit(self)
-  self.p.delete = true
-  self.p=nil
+  -- self.p.delete = true
+  -- self.p=nil
 end
 
 function SongSelectScene:update()
@@ -69,8 +69,6 @@ function SongSelectScene:update()
     if maininput.pressed("accept") then
       if self.levels[self.selection].islevel then
         clevel = self.levels[self.selection].filename
-	self.p.delete = true
-        self.p=nil
         --helpers.swap(states.game)
         Noble.transition(GameScene)
       else
