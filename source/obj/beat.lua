@@ -29,7 +29,8 @@ function beat()
     spr5 = sprites.beat.side,
     spr6 = sprites.beat.minehold,
     spr7 = sprites.beat.ringcw,
-    spr8 = sprites.beat.ringccw
+    spr8 = sprites.beat.ringccw,
+    delete = false
   }
   obj.ox = obj.x
   obj.oy = obj.y
@@ -373,18 +374,18 @@ function beat()
       if not obj.hold and not obj.minehold then
         local scaleval = ((obj.hb-cs.cbeat)*cs.level.properties.speed*obj.smult)/37+1.25
         if obj.inverse then
-          obj.spr2:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,16,16)
+          obj.spr2:drawCentered(helpers.round(obj.x), helpers.round(obj.y))--,0,1,1,16,16)
         elseif obj.mine then
-          obj.spr4:draw(math.floor(obj.x), math.floor(obj.y))--,0,1,1,16,16)
+          obj.spr4:drawCentered(helpers.round(obj.x), helpers.round(obj.y))--,0,1,1,16,16)
         elseif obj.side then
           --obj.spr5:draw(obj.x,obj.y,math.rad(obj.angle),1,1,12,10)
-          obj.spr5:drawRotated(math.floor(obj.x), math.floor(obj.y), obj.angle)--,0,1,1,24,20)
+          obj.spr5:drawRotated(helpers.round(obj.x), helpers.round(obj.y), obj.angle)--,0,1,1,24,20)
         elseif obj.ringcw then
-          obj.spr7:draw(200,120,math.rad(30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
+          obj.spr7:drawCentered(200,120,math.rad(30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         elseif obj.ringccw then
-          obj.spr8:draw(200,120,math.rad(-30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
+          obj.spr8:drawCentered(200,120,math.rad(-30*obj.spinrate*(cs.cbeat-obj.hb)+(360*obj.randomvalue)),scaleval,scaleval,39,39)
         else
-          obj.spr:draw(math.floor(obj.x), math.floor(obj.y)) --,0,1,1,16,16)
+          obj.spr:drawCentered(helpers.round(obj.x), helpers.round(obj.y)) --,0,1,1,16,16)
         end
       elseif obj.hold then
         local completion = math.max(0, (cs.cbeat - obj.hb) / obj.duration)
@@ -410,9 +411,9 @@ function beat()
     -- how many segments to draw
     -- based on the beat's angles by default, but can be overridden in the json
     if interp == "Linear" then
-      segments = 1
+      segments = math.floor(math.abs(a2 - a1)/16 + 1)
     elseif segments == nil then
-      segments = math.floor(math.abs(a2 - a1)/3) -- /3 to reduce segments - 4 is a bit jagged but 3 looks okay?
+      segments = math.floor(math.abs(a2 - a1)/5 + 1) -- /3 to reduce segments - 4 is a bit jagged but 3 looks okay?
     end
     
     -- make an open polygon (line) to hold all the points connecting segments - there should be 1 more point than n segments
@@ -480,57 +481,57 @@ function beat()
   end
   
   function obj.drawslice (ox, oy, rad, angle, inverse, alpha)
-    local p = {}
-    if inverse then
-      p = helpers.rotate(-rad,angle,ox,oy)
-    else
-      p = helpers.rotate(rad,angle,ox,oy)
-    end
-    gfx.setColor(0)
-    gfx.setLineWidth(2)
-    -- gfx.pushContext() -- TEMP REMOVED
-    --love.graphics.translate(p[1], p[2]) -- TEMP REMOVED
-    --love.graphics.rotate((angle - 90) * math.pi / 180) -- TEMP REMOVED
-  
-    -- draw the lines connecting the player to the paddle
-    gfx.drawLine(
-      0, 0,
-      (cs.p.paddle_distance + cs.extend) * math.cos(15 * math.pi / 180),
-      (cs.p.paddle_distance + cs.extend) * math.sin(15 * math.pi / 180)
-    )
-    gfx.drawLine(
-      0, 0,
-      (cs.p.paddle_distance + cs.extend) * math.cos(-15 * math.pi / 180),
-      (cs.p.paddle_distance + cs.extend) * math.sin(-15 * math.pi / 180)
-    )
-  
-    -- draw the paddle
-    local paddle_angle = 30 / 2 * math.pi / 180
-    gfx.drawArc(0, 0, (cs.p.paddle_distance + cs.extend), paddle_angle, -paddle_angle)
-    gfx.drawArc(0, 0, (cs.p.paddle_distance + cs.extend) + cs.p.paddle_width, paddle_angle, -paddle_angle)
-    gfx.drawLine(
-      (cs.p.paddle_distance + cs.extend) * math.cos(paddle_angle),
-      (cs.p.paddle_distance + cs.extend) * math.sin(paddle_angle),
-      ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(paddle_angle),
-      ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(paddle_angle)
-    )
-    gfx.drawLine(
-      (cs.p.paddle_distance + cs.extend) * math.cos(-paddle_angle),
-      (cs.p.paddle_distance + cs.extend) * math.sin(-paddle_angle),
-      ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(-paddle_angle),
-      ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(-paddle_angle)
-    )
-    -- gfx.popContext()  -- TEMP REMOVED
-  
-    gfx.setColor(1)
-    gfx.fillCircleAtPoint(p[1],p[2],4+cs.extend/2)
-    gfx.setColor(0)
-    gfx.drawCircleAtPoint(p[1],p[2],4+cs.extend/2)
-  
-    gfx.setColor(1)
-    cs.p.spr[cs.p.cemotion]:draw(obj.x,obj.y)
-  
-    return p[1], p[2]
+  --   local p = {}
+  --   if inverse then
+  --     p = helpers.rotate(-rad,angle,ox,oy)
+  --   else
+  --     p = helpers.rotate(rad,angle,ox,oy)
+  --   end
+  --   gfx.setColor(0)
+  --   gfx.setLineWidth(2)
+  --   -- gfx.pushContext() -- TEMP REMOVED
+  --   --love.graphics.translate(p[1], p[2]) -- TEMP REMOVED
+  --   --love.graphics.rotate((angle - 90) * math.pi / 180) -- TEMP REMOVED
+  -- 
+  --   -- draw the lines connecting the player to the paddle
+  --   gfx.drawLine(
+  --     0, 0,
+  --     (cs.p.paddle_distance + cs.extend) * math.cos(15 * math.pi / 180),
+  --     (cs.p.paddle_distance + cs.extend) * math.sin(15 * math.pi / 180)
+  --   )
+  --   gfx.drawLine(
+  --     0, 0,
+  --     (cs.p.paddle_distance + cs.extend) * math.cos(-15 * math.pi / 180),
+  --     (cs.p.paddle_distance + cs.extend) * math.sin(-15 * math.pi / 180)
+  --   )
+  -- 
+  --   -- draw the paddle
+  --   local paddle_angle = 30 / 2 * math.pi / 180
+  --   gfx.drawArc(0, 0, (cs.p.paddle_distance + cs.extend), paddle_angle, -paddle_angle)
+  --   gfx.drawArc(0, 0, (cs.p.paddle_distance + cs.extend) + cs.p.paddle_width, paddle_angle, -paddle_angle)
+  --   gfx.drawLine(
+  --     (cs.p.paddle_distance + cs.extend) * math.cos(paddle_angle),
+  --     (cs.p.paddle_distance + cs.extend) * math.sin(paddle_angle),
+  --     ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(paddle_angle),
+  --     ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(paddle_angle)
+  --   )
+  --   gfx.drawLine(
+  --     (cs.p.paddle_distance + cs.extend) * math.cos(-paddle_angle),
+  --     (cs.p.paddle_distance + cs.extend) * math.sin(-paddle_angle),
+  --     ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.cos(-paddle_angle),
+  --     ((cs.p.paddle_distance + cs.extend) + cs.p.paddle_width) * math.sin(-paddle_angle)
+  --   )
+  --   -- gfx.popContext()  -- TEMP REMOVED
+  -- 
+  --   gfx.setColor(1)
+  --   gfx.fillCircleAtPoint(p[1],p[2],4+cs.extend/2)
+  --   gfx.setColor(0)
+  --   gfx.drawCircleAtPoint(p[1],p[2],4+cs.extend/2)
+  -- 
+  --   gfx.setColor(1)
+  --   cs.p.spr[cs.p.cemotion]:draw(obj.x,obj.y)
+  -- 
+  --   return p[1], p[2]
   end
   
   return obj

@@ -17,7 +17,8 @@ function ResultsScene:enter(prev)
   }
   self.cselectionbounds = self.selectionbounds[1]
   self.goffset = 0
-  self.pctgrade = ((cs.gm.currst.maxhits - cs.gm.currst.misses) / cs.gm.currst.maxhits)*100
+  --self.pctgrade = ((cs.gm.currst.hits) / (cs.gm.currst.hits + cs.gm.currst.misses))*100
+  self.pctgrade = (cs.gm.currst.hits / cs.gm.currst.maxhits)*100
   self.lgrade, self.lgradepm = helpers.gradecalc(self.pctgrade)
   -- self.pljson = json.decodeFile("savedata/playedlevels.json",{})
   self.timesplayed = 0
@@ -66,7 +67,7 @@ function ResultsScene:update()
       self.cselectionbounds = self.selectionbounds[self.selection]
       --flux.to(self.cselectionbounds, 30, self.selectionbounds[self.selection]):ease("outExpo")
     end
-    if maininput.pressed("accept") then
+    if maininput.pressed("aButton") then
       if self.selection == 1 then
         Noble.transition(SongSelectScene)
       else

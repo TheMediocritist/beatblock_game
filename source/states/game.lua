@@ -52,7 +52,6 @@ function GameScene:update()
     flux.update(1)
     em.update(dt)
   end
-
 end
 
 
@@ -101,8 +100,8 @@ function GameScene.drawgame()
     gfx.drawText(cs.combo .. gfx.getLocalizedText("combo"),10,220)
   end
   gfx.setColor(1)
+  
+  playdate.drawFPS(382, 2)
 end
-
-
 
 return Game

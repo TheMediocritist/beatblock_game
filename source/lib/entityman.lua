@@ -12,7 +12,7 @@ local keys = {
 }
 
 local em = {
-  deep = deeper.init()
+  --deep = deeper.init()
 }
 
 function em.init(en,x,y,kvtable)
@@ -42,7 +42,7 @@ function em.update(dt)
 end
 
 function em.draw()
-  for i, v in ipairs (entities) do
+  for i = #entities, 1, -1 do
     entities[i].draw()
   end
 end

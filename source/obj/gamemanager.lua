@@ -27,7 +27,7 @@ function gamemanager()
     obj.currst.maxhits = 0
     for i,v in ipairs(obj.currst.level.events) do
       if v.type == "beat" or v.type == "slice" or v.type == "sliceinvert" or v.type == "inverse" or v.type == "hold" or v.type == "mine" or v.type == "side" or v.type == "minehold" or v.type == "ringcw" or v.type == "ringccw" then
-        obj.currst.maxhits += obj.currst.maxhits
+        obj.currst.maxhits += 1
       end
     end
   
@@ -57,8 +57,8 @@ function gamemanager()
     -- preload events such as beats
       if v.time <= obj.currst.cbeat+obj.currst.offset and v.played == false then
         if v.type == "play" and obj.currst.sounddata == nil then
-          obj.currst.level.bpm = v.bpm
           obj.currst.sounddata = (clevel..v.file)
+          obj.currst.level.bpm = v.bpm
          pq = pq .. "      loaded sounddata"
   
         end
@@ -313,7 +313,12 @@ function gamemanager()
     end
     
     if obj.currst.source == nil or obj.songfinished then
-      obj.currst.cbeat = obj.currst.cbeat + (obj.currst.level.bpm/60) * dt
+      if obj.currst.level.bpm then
+        obj.currst.cbeat = obj.currst.cbeat + (obj.currst.level.bpm/60) * dt
+      else
+        playdate.wait(500)
+        obj.currst.cbeat = obj.currst.cbeat + (obj.currst.level.bpm/60) * dt
+      end
     else
       obj.currst.source:update(dt)
       local b,sb = obj.currst.source:getBeat(1)

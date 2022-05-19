@@ -29,7 +29,8 @@ function player()
 		-6.5, -32.1, -12.5, -29.7, -17.7, -25.7, -12.0, -20.0, 
 		-8.5, -22.7, -4.4, -24.4, 0.0, -25.0, 4.4, -24.4, 
 		8.5, -22.7, 12.0, -20.0, 17.7, -25.7),
-		paddle_transform = playdate.geometry.affineTransform.new()
+		paddle_transform = playdate.geometry.affineTransform.new(),
+		delete = false
 	}
 
 
@@ -39,22 +40,22 @@ function player()
 		if obj.emotimer <= 0 then
 			obj.cemotion = "idle"
 		end
-		if maininput.pressed("a") then
+		if maininput.pressed("aButton") then
 			obj.cmode = not obj.cmode
 		end
 		if not cs.autoplay then
 			if obj.cmode then
 				obj.angleprevframe = obj.angle --this way obj.angleprevframe is always 1 frame behind obj.angle
-				if is3ds then
-					local touchx, touchy = 0, 0
-					for i, v in ipairs(love.touch.getTouches()) do
-						touchx, touchy = love.touch.getPosition(v)
-					end
-					obj.angle = 0 - math.deg(math.atan2(120 - touchy / shuv.scale, touchx / shuv.scale - 160))
-				else
-
-					obj.angle = 0 - math.deg(math.atan2(obj.y - love.mouse.getY() / shuv.scale, love.mouse.getX() / shuv.scale - obj.x)) + 90
-				end
+-- 				if is3ds then
+-- 					local touchx, touchy = 0, 0
+-- 					for i, v in ipairs(love.touch.getTouches()) do
+-- 						touchx, touchy = love.touch.getPosition(v)
+-- 					end
+-- 					obj.angle = 0 - math.deg(math.atan2(120 - touchy / shuv.scale, touchx / shuv.scale - 160))
+-- 				else
+-- 
+-- 					obj.angle = 0 - math.deg(math.atan2(obj.y - love.mouse.getY() / shuv.scale, love.mouse.getX() / shuv.scale - obj.x)) + 90
+-- 				end
 			else
 				if maininput.down("left") and playdate.isCrankDocked() then
 					obj.angle = obj.angle - 10
